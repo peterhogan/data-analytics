@@ -1,0 +1,34 @@
+---
+- hosts: dockernodes
+  remote_user: k5user
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: ensure docker repo is present
+    template: src=/home/k5user/data-sandpit/configs/docker-repo.j2 dest=/etc/yum.repos.d/docker.repo
+  - name: ensure docker-engine is installed
+    yum: name=docker-engine state=latest
+  - name: ensure docker is running
+    service: name=docker state=started
+  - name: create docker service direct/file
+    file:
+      path: /etc/systemd/system/docker.service.d
+      state: directory
+      recurse: yes
+      mode: 0755
+  - name: edit docker conf file
+    template: src=/home/k5user/data-sandpit/configs/docker.conf.j2 dest=/etc/systemd/system/docker.service.d/docker.conf
+  - name: daemon reload
+    command: /usr/bin/systemctl daemon-reload
+  - name: restart docker
+    command: /usr/bin/systemctl restart docker
+  - name: check bash script exists for startup
+    template: src=/home/k5user/data-sandpit/configs/hdp-docker-startup.sh.j2 dest=/home/k5user/hdp-docker-startup.sh
+  - name: make the script executable
+    file:
+      path: /home/k5user/hdp-docker-startup.sh
+      state: touch
+      mode: "u+x"
+  - name: start the sandbox
+    command: /bin/bash /home/k5user/hdp-docker-startup.sh
