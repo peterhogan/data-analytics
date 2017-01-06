@@ -1,4 +1,5 @@
-from optparse import OptionParser
+import argparse
+#from optparse import OptionParser
 
 kafkabroker = ""
 kafkatopic = ""
@@ -21,6 +22,7 @@ Optional arguments:
 
 Example: newsreader.py -q -f /data/rssfeeds.txt localhost:9092 topic_1
 """
-parser = OptionParser()
-parser.add_option("-f", "--file",
-                  
+parser = argparse.ArgumentParser(description="Read news articles from XML rss feeds specified in <RSS_FILE>. Feeds must be separated by newlines. Feeds to be ignored can be prefixed with #.")
+parser.add_argument("-f", "--file",
+parser.add_argument("broker",
+parser.add_argument("topic",

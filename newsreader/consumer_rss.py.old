@@ -54,7 +54,7 @@ filesread = 0
 
 # start the kafka consumer
 consumer = KafkaConsumer('python-test',
-                         bootstrap_servers=['172.17.0.1:9092'])
+                         bootstrap_servers=['localhost:9092'])
 
 register(Ending,consumer)
 
