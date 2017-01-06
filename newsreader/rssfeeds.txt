@@ -1,0 +1,143 @@
+## Al Jazeera
+http://www.aljazeera.com/xml/rss/all.xml
+## Sky News
+http://feeds.skynews.com/feeds/rss/home.xml
+http://feeds.skynews.com/feeds/rss/uk.xml
+http://feeds.skynews.com/feeds/rss/world.xml
+http://feeds.skynews.com/feeds/rss/us.xml
+http://feeds.skynews.com/feeds/rss/business.xml
+http://feeds.skynews.com/feeds/rss/politics.xml
+http://feeds.skynews.com/feeds/rss/technology.xml
+http://feeds.skynews.com/feeds/rss/entertainment.xml
+http://feeds.skynews.com/feeds/rss/strange.xml
+## BBC News
+http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/front_page/rss.xml
+http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/world/rss.xml
+http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/uk/rss.xml
+http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/england/rss.xml
+http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/northern_ireland/rss.xml
+http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/scotland/rss.xml
+http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/wales/rss.xml
+http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/business/rss.xml
+http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/uk_politics/rss.xml
+http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/health/rss.xml
+http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/education/rss.xml
+http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/sci/tech/rss.xml
+http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/technology/rss.xml
+## Reuters
+http://feeds.reuters.com/reuters/UKTopNews?format=xml
+http://feeds.reuters.com/reuters/UKdomesticNews?format=xml
+http://feeds.reuters.com/reuters/UKWorldNews?format=xml
+http://feeds.reuters.com/reuters/technologyNews?format=xml
+http://feeds.reuters.com/reuters/UKScienceNews?format=xml
+http://feeds.reuters.com/reuters/UKHealthNews?format=xml
+http://feeds.reuters.com/reuters/UKSportsNews?format=xml
+http://feeds.reuters.com/reuters/UKFeaturesNews?format=xml
+http://feeds.reuters.com/reuters/UKOddlyEnoughNews?format=xml
+http://feeds.reuters.com/reuters/UKEntertainment?format=xml
+http://feeds.reuters.com/reuters/UKPersonalFinanceNews?format=xml
+http://feeds.reuters.com/reuters/UKFundsNews?format=xml
+http://feeds.reuters.com/reuters/UKConsumerProducts?format=xml
+http://feeds.reuters.com/reuters/UKMedia?format=xml
+http://feeds.reuters.com/reuters/UKBankingFinancial?format=xml
+http://feeds.reuters.com/reuters/UKHealth?format=xml
+## CNN News
+http://rss.cnn.com/rss/edition.rss
+http://rss.cnn.com/rss/edition_world.rss
+http://rss.cnn.com/rss/edition_africa.rss
+http://rss.cnn.com/rss/edition_americas.rss
+http://rss.cnn.com/rss/edition_asia.rss
+http://rss.cnn.com/rss/edition_europe.rss
+http://rss.cnn.com/rss/edition_meast.rss
+http://rss.cnn.com/rss/edition_us.rss
+http://rss.cnn.com/rss/money_news_international.rss
+http://rss.cnn.com/rss/edition_technology.rss
+http://rss.cnn.com/rss/edition_space.rss
+http://rss.cnn.com/rss/edition_entertainment.rss
+http://rss.cnn.com/rss/edition_sport.rss
+http://rss.cnn.com/rss/edition_travel.rss
+http://rss.cnn.com/rss/cnn_latest.rss
+## The Gaurdian
+https://www.theguardian.com/world/rss
+https://www.theguardian.com/uk-news/rss
+https://www.theguardian.com/uk/culture/rss
+https://www.theguardian.com/uk/business/rss
+https://www.theguardian.com/uk/environment/rss
+https://www.theguardian.com/uk/technology/rss
+https://www.theguardian.com/uk/money/rss
+https://www.theguardian.com/science/rss
+https://www.theguardian.com/politics/rss
+## Financial Times
+http://www.ft.com/rss/home/asia
+http://www.ft.com/rss/home/middleeast
+http://www.ft.com/rss/home/europe
+http://www.ft.com/rss/home/india
+http://www.ft.com/rss/home/uk
+http://www.ft.com/rss/home/us
+http://www.ft.com/rss/companies
+http://www.ft.com/rss/companies/aerospace-defence
+http://www.ft.com/rss/companies/airlines
+http://www.ft.com/rss/companies/media
+http://www.ft.com/rss/companies/mining
+http://www.ft.com/rss/companies/oil-gas
+http://www.ft.com/rss/companies/banks
+http://www.ft.com/rss/companies/chemicals
+http://www.ft.com/rss/companies/construction
+http://www.ft.com/rss/companies/rail
+http://www.ft.com/rss/companies/shipping
+http://www.ft.com/rss/companies/technology
+http://www.ft.com/rss/companies/telecoms
+http://www.ft.com/rss/companies/transport
+http://www.ft.com/rss/companies/utilities
+http://www.ft.com/rss/companies/industrial-goods
+http://www.ft.com/rss/companies/healthcare
+http://www.ft.com/rss/companies/health
+http://www.ft.com/rss/companies/financials
+http://www.ft.com/rss/companies/energy
+## Russia Today
+https://www.rt.com/rss/
+https://www.rt.com/rss/politics/
+https://www.rt.com/rss/business/
+https://www.rt.com/rss/usa/
+https://www.rt.com/rss/uk/
+https://www.rt.com/rss/news/
+## Wikinews
+IGNORE https://en.wikinews.org/w/index.php?title=Special:NewsFeed&feed=atom&categories=Published&notcategories=No%20publish%7CArchived%7CAutoArchived%7Cdisputed&namespace=0&count=30&hourcount=124&ordermethod=categoryadd&stablepages=only
+## TheRealNews
+http://therealnews.com/rss/therealnews.rss
+## AlterNet
+IGNORE http://feeds.feedblitz.com/alternet
+## Associated Press
+http://hosted2.ap.org/atom/APDEFAULT/3d281c11a96b4ad082fe88aa0db04305
+http://hosted2.ap.org/atom/APDEFAULT/386c25518f464186bf7a2ac026580ce7
+http://hosted2.ap.org/atom/APDEFAULT/cae69a7523db45408eeb2b3a98c0c9c5
+http://hosted2.ap.org/atom/APDEFAULT/89ae8247abe8493fae24405546e9a1aa
+http://hosted2.ap.org/atom/APDEFAULT/f70471f764144b2fab526d39972d37b3
+http://hosted2.ap.org/atom/APDEFAULT/495d344a0d10421e9baa8ee77029cfbd
+http://hosted2.ap.org/atom/APDEFAULT/bbd825583c8542898e6fa7d440b9febc
+http://hosted2.ap.org/atom/APDEFAULT/b2f0ca3a594644ee9e50a8ec4ce2d6de
+## The Independent
+http://www.independent.co.uk/news/world/rss
+http://www.independent.co.uk/news/business/rss
+http://www.independent.co.uk/news/people/rss
+http://www.independent.co.uk/news/science/rss
+http://www.independent.co.uk/news/media/rss
+http://www.independent.co.uk/news/education/rss
+http://www.independent.co.uk/news/obituaries/rss
+## Yahoo News
+https://uk.news.yahoo.com/rss/uk
+https://uk.news.yahoo.com/rss/crime
+https://uk.news.yahoo.com/rss/world
+https://uk.news.yahoo.com/rss/europe
+https://uk.news.yahoo.com/rss/usa
+https://uk.news.yahoo.com/rss/asia
+https://uk.news.yahoo.com/rss/africa
+https://uk.news.yahoo.com/rss/middle-east
+https://uk.news.yahoo.com/rss/politics
+https://uk.news.yahoo.com/rss/business
+https://uk.news.yahoo.com/rss/tech
+https://uk.news.yahoo.com/rss/science
+https://uk.news.yahoo.com/rss/energy
+## PBS
+IGNORE http://feeds.feedburner.com/NewshourHeadlines
+IGNORE http://feeds.feedburner.com/pbs/qMdg

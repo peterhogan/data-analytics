@@ -1,0 +1,18 @@
+---
+- hosts: dockernodes
+  remote_user: k5user
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: ensure docker is running
+    service: name=docker state=started
+  - name: check bash script exists for startup
+    template: src=/home/k5user/data-sandpit/configs/hdp-docker-startup.sh.j2 dest=/home/k5user/hdp-docker-startup.sh
+  - name: check the script executable
+    file:
+      path: /home/k5user/hdp-docker-startup.sh
+      state: touch
+      mode: "u+x"
+  - name: start the sandbox
+    command: /bin/bash /home/k5user/hdp-docker-startup.sh

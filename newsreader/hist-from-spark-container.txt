@@ -1,0 +1,11 @@
+export PATH=$PATH:/opt/kafka_2.11-0.10.1.1/bin/:/opt/scala-2.11.8/bin/:/opt/spark-2.1.0-bin-hadoop2.7/bin/:/opt/zookeeper-3.4.9/bin/
+cp -v /data/software/spark-streaming-kafka-0-8-assembly_2.11-2.1.0.jar /opt/spark-2.1.0-bin-hadoop2.7/
+rm -v spark-streaming-kafka-0-10-assembly_2.10-2.1.0.jar 
+cp -v /data/software/zookeeper.cfg /opt/zookeeper-3.4.9/conf/
+mv /opt/zookeeper-3.4.9/conf/{zookeeper.cfg,zoo.cfg}
+zkServer.sh start
+kafka-server-start.sh /opt/kafka_2.11-0.10.1.1/config/server.properties &
+kafka-topics.sh --zookeeper localhost:2181 --create --topic test --partition 1 --replication-factor 1
+kafka-console-producer.sh --broker-list localhost:9092 --topic test
+bin/spark-submit --jars /opt/spark-2.1.0-bin-hadoop2.7/spark-streaming-kafka-0-8-assembly_2.11-2.1.0.jar /opt/spark-2.1.0-bin-hadoop2.7/examples/src/main/python/streaming/direct_kafka_wordcount.py localhost:9092 test
+bin/spark-submit --jars /opt/spark-2.1.0-bin-hadoop2.7/spark-streaming-kafka-0-8-assembly_2.11-2.1.0.jar /data/code/spark1.py
