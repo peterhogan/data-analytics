@@ -5,13 +5,13 @@ from kafka import KafkaProducer
 import kafka
 from lxml import etree
 import urllib.request
-import re
-import os, errno
+from bs4 import BeautifulSoup
+import os
 from time import time
+from time import sleep
 from datetime import timedelta
 import sys
-
-from kfk_rss_read import *
+import argparse
 
 ############################################
 ############### Inital setup ############### 
@@ -23,8 +23,7 @@ logo = """                                                  _
    / / |/ /  _/. \/\/ /_\ \  / `,_/ ,_/./ _ `|/ _` |/ ,_// _/  
   /_/`\__/\____/\_/\_//___| /_/\_\\____/\__,_/\___,|\___/_/    
 """
-version = "  Version 0.1"
-helpstring = "Usage: newsreader.py <KAFKA_BROKER> <KAFKA_TOPIC>"
+version = "  Version 0.2"
 
 # Function to read nice byte sizes:
 def size_format(x, suffix='B'):
@@ -34,39 +33,51 @@ def size_format(x, suffix='B'):
         x /= 1024.0
     return "%.1f%s%s" % (x, 'Yi', suffix)
 
-# get Kafka arguments from command line
-if len(sys.argv) != 3:
-    print(helpstring)
-    print("Two arguments only please, exiting!")
-    sys.exit(1)
-    
-try:
-    kafkaBroker = sys.argv[-2]
-except IndexError:
-    print(helpstring)
-    print("No Kafka broker given, exiting!")
-    sys.exit(1)
+##############################
+########## Startup ###########
+##############################
 
-try:
-    kafkaTopic = sys.argv[-1]
-except IndexError:
-    print(helpstring)
-    print("No Kafka topic given, exiting!")
-    sys.exit(1)
+# Parse command line arguments
+
+parser = argparse.ArgumentParser(description="Read news articles from RSS feeds given by the --file option, and send them to kafka_broker kafka_topic.")
+parser.add_argument("kafka_broker", help="URL of the kafka broker in the form URL:PORT")
+parser.add_argument("kafka_topic", help="kafka topic name to send to")
+parser.add_argument("-q", "--quiet", help="only output on error",
+                    action="store_true", default=False)
+parser.add_argument("-l", "--live", help="print the article name on send",
+                    action="store_true", default=False)
+parser.add_argument("-r", "--running", help="output a running total of files sent",
+                    action="store_true", default=False)
+parser.add_argument("-i", "--interactive", help="wait for keypress to start sending articles",
+                    action="store_true", default=False)
+parser.add_argument("-w", "--wait", help="how many seconds to pause before iterating over the source list (only when running in continuous mode)", action="store", type=int, default=60)
+parser.add_argument("-f", "--file", help="path of RSS sources file",
+                    action="store", required=True)
+parser.add_argument("-g", "--guid", help="name of the global GUID file, default: globalGUID.log",
+                    action="store", required=False, default="globalGUID.log")
+parser.add_argument("-O", "--output", help="list the outputs to send",
+                    choices=["all","title","description","date","GUID","roottitle","rootdate"], default="all")
+parser.add_argument("-c", "--continuous", help="keep iterating over the RSS file list sources - Ctrl-C to quit",
+                    action="store_true", default=False)
+args = parser.parse_args()
 
 # specify the location of the feed file (text file full of rss links)
-rssfeedfile = 'rssfeeds.txt'
+rssfeedfile = args.file
 
 # specify the location of the global GUID file
-globalGUID = 'globalGUID.log'
+globalGUID = args.guid
+
+# Print logo
+if args.quiet == False:
+    print(logo+version)
 
 # check before streaming
-print(logo+version)
-cont = input("Start streaming %s? (y/n) " % rssfeedfile)
-if cont == 'y':
-    pass
-else:
-    quit('Now exiting, no files downloaded')
+if args.interactive:
+    cont = input("Start streaming %s? (y/n) " % rssfeedfile)
+    if cont == 'y':
+        pass
+    else:
+        quit('Now exiting, no files downloaded')
 
 # start timer
 start = time()
@@ -98,9 +109,24 @@ def BuildDates(read_file):
 ######### Start Streaming ######### 
 ###################################
 
+# print out values before streaming:
+if args.quiet == False:
+    print("Reading from:\t\t",args.file)
+    print("GUID file:\t\t", args.guid)
+    print("Kafka broker:\t\t", args.kafka_broker)
+    print("Kakfa topic:\t\t", args.kafka_topic)
+
+# define the keep running variable:
+keep_running = True
+
+# define the counter variables:
+filesread = 0
+articlessent = 0
+duplicates = 0
+
 # start the kafka producer
 try:
-    producer = KafkaProducer(bootstrap_servers=kafkaBroker)
+    producer = KafkaProducer(bootstrap_servers=args.kafka_broker)
 except kafka.errors.NoBrokersAvailable:
     print("##### No brokers found running! #####")
     print("Ensure Zookeeper and Kakfa are running and retry")
@@ -110,97 +136,113 @@ except kafka.errors.NoBrokersAvailable:
 with open(rssfeedfile) as feedsources:
     rssfeeds = feedsources.read().splitlines()
 
-# define the counter variables:
-filesread = 0
-articlessent = 0
-duplicates = 0
-#timestreaming = 0
-#kafkainstance = 
-#totaldownload = 0
+while keep_running:
+    # pull out the news sources one by one
+    for feed in rssfeeds:
+        if feed.startswith('http'):
+            # open and save the global guid file into guid_list (slow - alternative?)
+            with open(globalGUID, 'r') as masterGUID:
+                guid_list = masterGUID.read().splitlines()
 
-# pull out the news sources one by one
-for feed in rssfeeds:
-    if feed.startswith('http'):
-        # open and save the global guid file into guid_list (slow - alternative?)
-        with open(globalGUID, 'r') as masterGUID:
-            guid_list = masterGUID.read().splitlines()
+            # increment the files read counter
+            filesread += 1
 
-        # increment the files read counter
-        filesread += 1
-
-        # download the file by url
-        try:
-            response = urllib.request.urlopen(feed)
-        except RemoteDisconnected:
-            continue
-        try:
-            rssfile = etree.parse(response)
-        except etree.XMLSyntaxError:
-            continue
-
-        # get root title with RootTitle function
-        itemroottitle = RootTitles(rssfile)
-
-        # get build date with BuildDates function (if possible)
-        itemrootdate = BuildDates(rssfile)
-
-        for i in range(len(rssfile.xpath('//channel/item'))):
-
-            # Get GUID and pass iteration if it already exists
+            # download the file by url
             try:
-                itemguid = rssfile.xpath('//channel/item/guid')[i].text
-            except IndexError:
-                itemguid = rssfile.xpath('//channel/item/title')[i].text
-
-            if itemguid in guid_list:
-                # increment the duplicates counter then skip
-                duplicates += 1
+                response = urllib.request.urlopen(feed)
+            except RemoteDisconnected:
                 continue
-            else:
-                with open(globalGUID, 'a+') as masterGUIDw:
-                    masterGUIDw.write(str(itemguid)+'\n')
-
-            # Get the item title
             try:
-                itemtitle = rssfile.xpath('//channel/item/title')[i].text
-            except IndexError:
-                itemtitle = 'NO ITEM TITLE FOUND'
-
-            # Get the item Description and remove any html tags
-            try:
-                itemdescpre = rssfile.xpath('//channel/item/description')[i].text
-                itemdescsoup = BeautifulSoup(itemdescpre, "lxml")
-                itemdesc = itemdescsoup.get_text()
-            except (TypeError, IndexError):
-                itemdesc = ' ' 
-
-            # Get Publish Dates
-            try:
-                itempubdate = rssfile.xpath('//channel/item/pubDate')[i].text
-            except IndexError:
-                itempubdate = ' ' 
-
-            rss_article_tuple = (itemtitle,itemdesc,itempubdate,itemguid,itemroottitle,itemrootdate)
-            rss_article = ' | '.join(rss_article_tuple)
-
-            producer.send(kafkaTopic, rss_article.encode('utf-8'))
-
-
-            articlessent += 1
-
-            try:
-                print("Source:",itemroottitle,"Article:",itemtitle)
-            except UnicodeEncodeError:
+                rssfile = etree.parse(response)
+            except etree.XMLSyntaxError:
                 continue
 
-    # Flatten GUID file to prevent duplicates being missed through nested lists
-    #guidlist = list(chain(*guidlist))
+            # get root title with RootTitle function
+            itemroottitle = RootTitles(rssfile)
 
+            # get build date with BuildDates function (if possible)
+            itemrootdate = BuildDates(rssfile)
+
+            for i in range(len(rssfile.xpath('//channel/item'))):
+
+                # Get GUID and pass iteration if it already exists
+                try:
+                    itemguid = rssfile.xpath('//channel/item/guid')[i].text
+                except IndexError:
+                    itemguid = rssfile.xpath('//channel/item/title')[i].text
+
+                if itemguid in guid_list:
+                    # increment the duplicates counter then skip
+                    duplicates += 1
+                    continue
+                else:
+                    with open(globalGUID, 'a+') as masterGUIDw:
+                        masterGUIDw.write(str(itemguid)+'\n')
+
+                # Get the item title
+                try:
+                    itemtitle = rssfile.xpath('//channel/item/title')[i].text
+                except IndexError:
+                    itemtitle = 'NO ITEM TITLE FOUND'
+
+                # Get the item Description and remove any html tags
+                try:
+                    itemdescpre = rssfile.xpath('//channel/item/description')[i].text
+                    itemdescsoup = BeautifulSoup(itemdescpre, "lxml")
+                    itemdesc = itemdescsoup.get_text()
+                except (TypeError, IndexError):
+                    itemdesc = ' ' 
+
+                # Get Publish Dates
+                try:
+                    itempubdate = rssfile.xpath('//channel/item/pubDate')[i].text
+                except IndexError:
+                    itempubdate = ' ' 
+
+                if args.output == "all":
+                    rss_article_tuple = (itemtitle,itemdesc,itempubdate,itemguid,itemroottitle,itemrootdate)
+                    rss_article = ' | '.join(rss_article_tuple)
+                elif args.output == "title":
+                    rss_article = itemtitle
+                elif args.output == "description":
+                    rss_article= itemdesc
+                elif args.output == "date":
+                    rss_article= itempubdate
+                elif args.output == "GUID":
+                    rss_article= itemguid
+                elif args.output == "roottitle":
+                    rss_article= itemroottitle
+                elif args.output == "rootdate":
+                    rss_article= itemrootdate
+
+
+                producer.send(args.kafka_topic, rss_article.encode('utf-8'))
+
+
+                articlessent += 1
+
+                if args.quiet == False and args.live == False and args.running:
+                    print("Articles sent:\t\t", articlessent, end='\r', flush=True)
+
+                if args.quiet == False and args.live:
+                    try:
+                        print("Source:",itemroottitle,"Article:",itemtitle)
+                    except UnicodeEncodeError:
+                        continue
+
+        else:
+            continue
+
+        # for option -c, --continuous
+    if args.continuous:
+        sleep(args.wait)
     else:
-        continue
+        keep_running = False
+
 totaltime = time() - start
-print('\nFiles read:', filesread)
-print('Articles sent:', articlessent)
-print('Duplicate articles:', duplicates)
-print('Time taken:',str(timedelta(seconds=totaltime)))
-print('Size of globalGUID.log:', size_format(int(os.stat(globalGUID).st_size)))
+if args.quiet == False or args.running == False:
+    print('\nFiles read:\t\t', filesread)
+    print('Articles sent:\t\t', articlessent)
+    print('Duplicate articles:\t', duplicates)
+    print('Time taken:\t\t',str(timedelta(seconds=totaltime)))
+    print('Size of globalGUID.log:\t', size_format(int(os.stat(globalGUID).st_size)))
