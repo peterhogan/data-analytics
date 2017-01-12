@@ -24,8 +24,6 @@ parser.add_argument("-s", "--server",
                     action="store", required=True, default="http://localhost:9000")
 parser.add_argument("-b", "--from-beginning", help="read from the beginning of the topic",
                             action="store_true", default=False)
-parser.add_argument("-c", "--count", help="count the topN (given by -n) entities",
-                            action="store_true", default=False)
 parser.add_argument("-n", "--topn", help="show top n items",
                             action="store", type=int, default=10)
 args = parser.parse_args()
@@ -36,19 +34,16 @@ topN = args.topn
 ## define the 'ending' function
 def Ending(kafka_consumer):
     kafka_consumer.close()
-    if args.count == True:
-        print('Time taken:', str(timedelta(seconds=time()-start)))
-        print('Messages received:', filesread)
-        print("###############################")
-        print('People:',Counter(people).most_common(topN))
-        print("###############################")
-        print('Places:',Counter(places).most_common(topN))
-        print("###############################")
-        print('Organisations:',Counter(orgs).most_common(topN))
-        print("###############################")
-        print('Misc:',Counter(misc).most_common(topN))
-        print("###############################")
-        print('Dates:',Counter(dates).most_common(topN))
+    print('Time taken:', str(timedelta(seconds=time()-start)))
+    print('Messages received:', filesread)
+    print("###############################")
+    print('People:',Counter(people).most_common(topN))
+    print("###############################")
+    print('Places:',Counter(places).most_common(topN))
+    print("###############################")
+    print('Organisations:',Counter(orgs).most_common(topN))
+    print("###############################")
+    print('Misc:',Counter(misc).most_common(topN))
 
 ## define the sorting fucntion for NEs
 def appendToList(text, ner):
@@ -60,21 +55,18 @@ def appendToList(text, ner):
         orgs.append(text)
     elif ner == "MISC":
         misc.append(text)
-    elif ner == "DATE":
-        dates.append(text)
 
 # start timer
 start = time()
 
 # List Topics to pull out
-tokenlist = ["PERSON","LOCATION","MISC","ORGANIZATION","DATE"]
+tokenlist = ["PERSON","LOCATION","MISC","ORGANIZATION"]
 
 # initalise buckets:
 people = []
 places = []
 orgs = []
 misc = []
-dates = []
 
 ###################################
 ######### Start Receiving ######### 
@@ -107,22 +99,26 @@ for msg in consumer:
         # iterate over tokens
         for k in range(len(annotate_article['sentences'][j]['tokens'])):
 
-            token = annotate_article['sentences'][j]['tokens'][k]
-            token_ner = token['ner']
-            token_text = token['originalText']
-           
-            # this \/ horrible chain of ifs and elses could be tidied up:
-            if token_ner in [chamber[i][1] for i in range(len(chamber))]:
-                chamber.append((token_text,token_ner))
+        token = annotate_article['sentences'][j]['tokens'][k]
+        token_ner = token['ner']
+        token_text = token['originalText']
+
+        if token_ner in [chamber[i][1] for i in range(len(chamber))]:
+            print(token_ner,'is in',[chamber[i][1] for i in range(len(chamber))])
+            chamber.append((token_text,token_ner))
+        else:   
+            print(token_ner,'is NOT in',[chamber[i][1] for i in range(len(chamber))])
+            if len(chamber) > 0:
+            print('Chamber is nonempty:', chamber)
+            addToList(' '.join([chamber[a][0] for a in range(len(chamber))]), chamber[0][1])
+            chamber = []
             else:   
-                if len(chamber) > 0:
-                    appendToList(' '.join([chamber[a][0] for a in range(len(chamber))]), chamber[0][1])
-                    chamber = []
+                if token_ner in tokenlist1:
+                print((token_text,token_ner),'is in',tokenlist1)
+                chamber.append((token_text,token_ner))
                 else:   
-                    if token_ner in tokenlist:
-                        chamber.append((token_text,token_ner))
-                    else:   
-                        pass
+                print(token_text,'is not an entity')
+                pass
 
 '''
         for token in annotate_article['sentences'][j]['tokens']:
