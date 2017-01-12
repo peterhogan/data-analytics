@@ -27,7 +27,6 @@ for article in articlelist:
         chamber=[]
         for k in range(len(annotate_article['sentences'][j]['tokens'])):
 
-
             token = annotate_article['sentences'][j]['tokens'][k]
             token_ner = token['ner']
             token_text = token['originalText']

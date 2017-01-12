@@ -5,6 +5,7 @@ from kafka import KafkaProducer
 from kafka import KafkaConsumer
 from time import time
 from datetime import timedelta
+import datetime
 from atexit import register
 from pycorenlp import StanfordCoreNLP
 import argparse
@@ -28,6 +29,8 @@ parser.add_argument("-c", "--count", help="count the topN (given by -n) entities
                             action="store_true", default=False)
 parser.add_argument("-n", "--topn", help="show top n items",
                             action="store", type=int, default=10)
+parser.add_argument("-t","--time", help="seconds to collect for",
+                            action="store",type=int, default=0, required=False)
 args = parser.parse_args()
 
 ## get topN
@@ -63,8 +66,14 @@ def appendToList(text, ner):
     elif ner == "DATE":
         dates.append(text)
 
-# start timer
+# start end timer
 start = time()
+if args.time > 0:
+    timed = True
+    end_time = datetime.datetime.now() + datetime.timedelta(seconds=args.time)
+else:
+    timed = False
+    end_time = 0
 
 # List Topics to pull out
 tokenlist = ["PERSON","LOCATION","MISC","ORGANIZATION","DATE"]
@@ -92,42 +101,39 @@ register(Ending,consumer)
 
 # open the port to the NLP server
 nlp = StanfordCoreNLP(args.server)
-
+print("starting")
 # read messages
-for msg in consumer:
-    # increment the file counter 
-    filesread += 1
-    # decode to UTF-8
-    msg_decode = msg.value.decode('utf-8')
-    # pull out entities
-    annotate_article = nlp.annotate(msg_decode, properties={'annotators': 'ner', 'outputFormat': 'json'})
-    for j in range(len(annotate_article['sentences'])):
-        # reset the chamber per sentence
-        chamber = []
-        # iterate over tokens
-        for k in range(len(annotate_article['sentences'][j]['tokens'])):
+while True:
+    for msg in consumer:
+        # increment the file counter 
+        filesread += 1
+        # decode to UTF-8
+        msg_decode = msg.value.decode('utf-8')
+        # pull out entities
+        annotate_article = nlp.annotate(msg_decode, properties={'annotators': 'ner', 'outputFormat': 'json'})
+        for j in range(len(annotate_article['sentences'])):
+            # reset the chamber per sentence
+            chamber = []
+            # iterate over tokens
+            for k in range(len(annotate_article['sentences'][j]['tokens'])):
 
-            token = annotate_article['sentences'][j]['tokens'][k]
-            token_ner = token['ner']
-            token_text = token['originalText']
-           
-            # this \/ horrible chain of ifs and elses could be tidied up:
-            if token_ner in [chamber[i][1] for i in range(len(chamber))]:
-                chamber.append((token_text,token_ner))
-            else:   
-                if len(chamber) > 0:
-                    appendToList(' '.join([chamber[a][0] for a in range(len(chamber))]), chamber[0][1])
-                    chamber = []
-                else:   
-                    if token_ner in tokenlist:
-                        chamber.append((token_text,token_ner))
-                    else:   
-                        pass
-
-'''
-        for token in annotate_article['sentences'][j]['tokens']:
-            token_ner = token['ner']
-            if token_ner in tokenlist:
+                token = annotate_article['sentences'][j]['tokens'][k]
+                token_ner = token['ner']
                 token_text = token['originalText']
-                appendToList(token_text, token_ner)
-                '''
+               
+                # this \/ horrible chain of ifs and elses could be tidied up:
+                if token_ner in [chamber[i][1] for i in range(len(chamber))]:
+                    chamber.append((token_text,token_ner))
+                else:   
+                    if len(chamber) > 0:
+                        appendToList(' '.join([chamber[a][0] for a in range(len(chamber))]), chamber[0][1])
+                        chamber = []
+                    else:   
+                        if token_ner in tokenlist:
+                            chamber.append((token_text,token_ner))
+                        else:   
+                            pass
+
+        if timed ==True and datetime.datetime.now() >= end_time:
+            break
+Ending(consumer)
