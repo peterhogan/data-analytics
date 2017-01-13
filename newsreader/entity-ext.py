@@ -55,7 +55,7 @@ def Ending(kafka_consumer):
 
 ## define the sorting fucntion for NEs
 def appendToList(text, ner):
-    if ner == "PERSON":
+    if ner == "PERSON" and ' ' in text:
         people.append(text)
     elif ner == "LOCATION":
         places.append(text)
@@ -101,7 +101,7 @@ register(Ending,consumer)
 
 # open the port to the NLP server
 nlp = StanfordCoreNLP(args.server)
-print("starting")
+print("Listening....")
 # read messages
 while True:
     for msg in consumer:
