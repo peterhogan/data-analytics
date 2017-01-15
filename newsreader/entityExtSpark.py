@@ -33,6 +33,9 @@ def filterUselessWords(word, blacklist):
         return False
     return True
 
+def ExtractEntities(sentence):
+    return
+
 def collocateWords(text):
     tokens = word_tokenize(text)
     return Text(tokens).collocations()
@@ -54,39 +57,11 @@ counts = lines.flatMap(lambda line: line.split(" ")) \
               .map(lambda word: (word,1)) \
               .updateStateByKey(updateFunction, initialRDD=initialStateRDD)
 
-windowed = counts.window(60,slideDuration=30)
-sortwords = windowed.transform(lambda rdd: rdd.sortBy(lambda a: a[1], ascending=False))
+#windowed = counts.window(60,slideDuration=30)
+sortwords = counts.transform(lambda rdd: rdd.sortBy(lambda a: a[1], ascending=False))
 sortwords.pprint()
-'''
-sortWindow = windowed.transform(sortByKey(lambda a, b: b))
-sortWindow.pprint(num=20)
-'''
 
 context.start()
 context.awaitTermination()
 
-'''
-def functionToCreateContext():
-    sc = SparkContext(appName='testing-python')
-    scc = StreamingContext(sc, 2)
-    sc.setLogLevel("ERROR")
-    scc.checkpoint(args.checkpoint)
-    return scc
-
-              .reduceByKey(lambda a, b: a+b)\
-        .updateStateByKey(lambda a: a[1])
-
-counts.pprint()
-
-#windowed = counts.window(60,slideDuration=30)
-
-output = windowed.foreachRDD(counts.sortByKey(lambda b: b))
-output.pprint()
-'''
-
-'''
-samplewords = counts.transform(lambda rdd: rdd.sample(withReplacement=False,fraction=0.5))
-'''
-
 #counts.saveAsTextFiles("test",suffix="txt")
-#counts.pprint(num=30)
