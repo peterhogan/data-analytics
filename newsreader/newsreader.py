@@ -59,6 +59,7 @@ parser.add_argument("-O", "--output", help="list the outputs to send",
                     choices=["all","title","description","date","GUID","roottitle","rootdate"], default="all")
 parser.add_argument("-c", "--continuous", help="keep iterating over the RSS file list sources - Ctrl-C to quit",
                     action="store_true", default=False)
+parser.add_argument("-n", "--number-of-messages", help="give the number of messages to send, 0 = all", action="store", type=int, default=0)
 args = parser.parse_args()
 
 # specify the location of the feed file (text file full of rss links)
@@ -119,6 +120,10 @@ if args.quiet == False:
 # define the keep running variable:
 keep_running = True
 
+# define the EarlyExit class:
+class EarlyExit(Exception):
+        pass
+
 # define the counter variables:
 filesread = 0
 articlessent = 0
@@ -135,109 +140,115 @@ except kafka.errors.NoBrokersAvailable:
 # Open the rssfeeds text file for parsing
 with open(rssfeedfile) as feedsources:
     rssfeeds = feedsources.read().splitlines()
+try:
+    while keep_running:
+        # pull out the news sources one by one
+        for feed in rssfeeds:
+            if feed.startswith('http'):
+                # open and save the global guid file into guid_list (slow - alternative?)
+                with open(globalGUID, 'r') as masterGUID:
+                    guid_list = masterGUID.read().splitlines()
 
-while keep_running:
-    # pull out the news sources one by one
-    for feed in rssfeeds:
-        if feed.startswith('http'):
-            # open and save the global guid file into guid_list (slow - alternative?)
-            with open(globalGUID, 'r') as masterGUID:
-                guid_list = masterGUID.read().splitlines()
+                # increment the files read counter
+                filesread += 1
 
-            # increment the files read counter
-            filesread += 1
-
-            # download the file by url
-            try:
-                response = urllib.request.urlopen(feed)
-            except RemoteDisconnected:
-                continue
-            try:
-                rssfile = etree.parse(response)
-            except etree.XMLSyntaxError:
-                continue
-
-            # get root title with RootTitle function
-            itemroottitle = RootTitles(rssfile)
-
-            # get build date with BuildDates function (if possible)
-            itemrootdate = BuildDates(rssfile)
-
-            for i in range(len(rssfile.xpath('//channel/item'))):
-
-                # Get GUID and pass iteration if it already exists
+                # download the file by url
                 try:
-                    itemguid = rssfile.xpath('//channel/item/guid')[i].text
-                except IndexError:
-                    itemguid = rssfile.xpath('//channel/item/title')[i].text
-
-                if itemguid in guid_list:
-                    # increment the duplicates counter then skip
-                    duplicates += 1
+                    response = urllib.request.urlopen(feed)
+                except RemoteDisconnected:
                     continue
-                else:
-                    with open(globalGUID, 'a+') as masterGUIDw:
-                        masterGUIDw.write(str(itemguid)+'\n')
-
-                # Get the item title
                 try:
-                    itemtitle = rssfile.xpath('//channel/item/title')[i].text
-                except IndexError:
-                    itemtitle = 'NO ITEM TITLE FOUND'
+                    rssfile = etree.parse(response)
+                except etree.XMLSyntaxError:
+                    continue
 
-                # Get the item Description and remove any html tags
-                try:
-                    itemdescpre = rssfile.xpath('//channel/item/description')[i].text
-                    itemdescsoup = BeautifulSoup(itemdescpre, "lxml")
-                    itemdesc = itemdescsoup.get_text()
-                except (TypeError, IndexError):
-                    itemdesc = ' ' 
+                # get root title with RootTitle function
+                itemroottitle = RootTitles(rssfile)
 
-                # Get Publish Dates
-                try:
-                    itempubdate = rssfile.xpath('//channel/item/pubDate')[i].text
-                except IndexError:
-                    itempubdate = ' ' 
+                # get build date with BuildDates function (if possible)
+                itemrootdate = BuildDates(rssfile)
 
-                if args.output == "all":
-                    rss_article_tuple = (itemtitle,itemdesc,itempubdate,itemguid,itemroottitle,itemrootdate)
-                    rss_article = ' | '.join(rss_article_tuple)
-                elif args.output == "title":
-                    rss_article = itemtitle
-                elif args.output == "description":
-                    rss_article= itemdesc
-                elif args.output == "date":
-                    rss_article= itempubdate
-                elif args.output == "GUID":
-                    rss_article= itemguid
-                elif args.output == "roottitle":
-                    rss_article= itemroottitle
-                elif args.output == "rootdate":
-                    rss_article= itemrootdate
+                for i in range(len(rssfile.xpath('//channel/item'))):
 
-
-                producer.send(args.kafka_topic, rss_article.encode('utf-8'))
-
-
-                articlessent += 1
-
-                if args.quiet == False and args.live == False and args.running:
-                    print("Articles sent:\t\t", articlessent, end='\r', flush=True)
-
-                if args.quiet == False and args.live:
+                    # Get GUID and pass iteration if it already exists
                     try:
-                        print("Source:",itemroottitle,"Article:",itemtitle)
-                    except UnicodeEncodeError:
+                        itemguid = rssfile.xpath('//channel/item/guid')[i].text
+                    except IndexError:
+                        itemguid = rssfile.xpath('//channel/item/title')[i].text
+
+                    if itemguid in guid_list:
+                        # increment the duplicates counter then skip
+                        duplicates += 1
                         continue
+                    else:
+                        with open(globalGUID, 'a+') as masterGUIDw:
+                            masterGUIDw.write(str(itemguid)+'\n')
 
+                    # Get the item title
+                    try:
+                        itemtitle = rssfile.xpath('//channel/item/title')[i].text
+                    except IndexError:
+                        itemtitle = 'NO ITEM TITLE FOUND'
+
+                    # Get the item Description and remove any html tags
+                    try:
+                        itemdescpre = rssfile.xpath('//channel/item/description')[i].text
+                        itemdescsoup = BeautifulSoup(itemdescpre, "lxml")
+                        itemdesc = itemdescsoup.get_text()
+                    except (TypeError, IndexError):
+                        itemdesc = ' ' 
+
+                    # Get Publish Dates
+                    try:
+                        itempubdate = rssfile.xpath('//channel/item/pubDate')[i].text
+                    except IndexError:
+                        itempubdate = ' ' 
+
+                    if args.output == "all":
+                        rss_article_tuple = (itemtitle,itemdesc,itempubdate,itemguid,itemroottitle,itemrootdate)
+                        rss_article = ' | '.join(rss_article_tuple)
+                    elif args.output == "title":
+                        rss_article = itemtitle
+                    elif args.output == "description":
+                        rss_article= itemdesc
+                    elif args.output == "date":
+                        rss_article= itempubdate
+                    elif args.output == "GUID":
+                        rss_article= itemguid
+                    elif args.output == "roottitle":
+                        rss_article= itemroottitle
+                    elif args.output == "rootdate":
+                        rss_article= itemrootdate
+
+
+                    producer.send(args.kafka_topic, rss_article.encode('utf-8'))
+
+
+                    articlessent += 1
+                    
+                    if args.number_of_messages > 0:
+                        if args.number_of_messages <= articlessent:
+                            raise EarlyExit
+
+                    if args.quiet == False and args.live == False and args.running:
+                        print("Articles sent:\t\t", articlessent, end='\r', flush=True)
+
+                    if args.quiet == False and args.live:
+                        try:
+                            print("Source:",itemroottitle,"Article:",itemtitle)
+                        except UnicodeEncodeError:
+                            continue
+
+            else:
+                continue
+
+            # for option -c, --continuous
+        if args.continuous:
+            sleep(args.wait)
         else:
-            continue
-
-        # for option -c, --continuous
-    if args.continuous:
-        sleep(args.wait)
-    else:
-        keep_running = False
+            keep_running = False
+except EarlyExit:
+    pass
 
 totaltime = time() - start
 if args.quiet == False or args.running == False:
