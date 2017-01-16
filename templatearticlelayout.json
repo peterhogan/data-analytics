@@ -1,0 +1,37 @@
+{
+    "title":"Concern over EU plans to send refugees back to Greece",
+    "description":"There is concern over ...",
+    "published":"17th Jan 2017 13:37:13Z",
+    "reportedby":"BBC News",
+    "guid":"234FE234BA3C5F",
+    "people": {
+        "person1": {
+            "name":"Theresa May"
+        },
+        "person2": {
+            "name":"John Doe"
+        }
+    }
+    "locations": {
+        "location1": {
+            "name":"Greece",
+            "long":45.363453,
+            "lat":21.54698
+        },
+        "location2": {
+            "name":"Syria",
+            "long":55.363453,
+            "lat":-1.54698
+        }
+    }
+    "organisations": {
+        "org1": {
+            "name": "EU"
+        }
+    }
+    "misc": {
+        "misc1": {
+            "name": "refugees"
+        }
+    }
+}
