@@ -4,6 +4,7 @@ from pyspark import SparkConf
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import *
 import argparse
+from pycorenlp import StanfordCoreNLP
 #from nltk import word_tokenize, Text, collocations
 
 ######### CLI arguments #########
@@ -11,6 +12,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument("broker")
 parser.add_argument("topic")
 parser.add_argument("checkpoint")
+parser.add_argument("-s", "--server", 
+                    help="URL of the Stanford CoreNLP server (default: http://localhost:9000)",
+                    action="store", required=True, default="http://localhost:9000")
 
 args = parser.parse_args()
 
@@ -33,12 +37,74 @@ def filterUselessWords(word, blacklist):
         return False
     return True
 
-def ExtractEntities(sentence):
-    return
+## define the sorting fucntion for NEs
+def appendToList(text, ner):
+    if ner == "PERSON" and ' ' in text:
+        people.append(text)
+    elif ner == "LOCATION":
+        locations.append(text)
+    elif ner == "ORGANIZATION": 
+        organisations.append(text)
+    elif ner == "MISC":
+        misc.append(text)
+    elif ner == "DATE":
+        dates.append(text)
 
-def collocateWords(text):
-    tokens = word_tokenize(text)
-    return Text(tokens).collocations()
+## Entity Extraction function
+def extractNER(sentence, nlpServer):
+    # initialise lists for entities:
+    people = []
+    locations = []
+    organisations = []
+    dates = []
+    misc = []
+
+    # decode to UTF-8
+    sentence_decode = sentence#.value.decode('utf-8')
+
+    # pull out entities
+    annotate_article = nlpServer.annotate(sentence_decode, properties={'annotators': 'ner', 'outputFormat': 'json'})
+    for j in range(len(annotate_article['sentences'])):
+        # reset the chamber per sentence
+        chamber = []
+        # iterate over tokens
+        for k in range(len(annotate_article['sentences'][j]['tokens'])):
+
+            token = annotate_article['sentences'][j]['tokens'][k]
+            token_ner = token['ner']
+            token_text = token['originalText']
+           
+            # this horrible chain of ifs and elses could be tidied up:
+            if token_ner in [chamber[i][1] for i in range(len(chamber))]:
+                chamber.append((token_text,token_ner))
+            else:   
+                if len(chamber) > 0:
+                    appendPair = (' '.join([chamber[a][0] for a in range(len(chamber))]), chamber[0][1])
+                    if appendPair[1] == "PERSON" and ' ' in appendPair[0]:
+                        people.append(appendPair[0])
+                    elif appendPair[1] == "LOCATION":
+                        locations.append(appendPair[0])
+                    elif appendPair[1] == "ORGANIZATION": 
+                        organisations.append(appendPair[0])
+                    elif appendPair[1] == "MISC":
+                        misc.append(appendPair[0])
+                    elif appendPair[1] == "DATE":
+                        dates.append(appendPair[0])
+
+                    ## reinitalise the chamber
+                    chamber = []
+                else:   
+                    if token_ner in tokenlist:
+                        chamber.append((token_text,token_ner))
+                    else:   
+                        pass
+    return [people,locations,organisations,misc,dates]
+
+## Connect to NLP Server
+nlp = StanfordCoreNLP(args.server)
+
+# List Topics to pull out
+tokenlist = ["PERSON","LOCATION","MISC","ORGANIZATION","DATE"]
 
 wordBlacklist = ['', ' ', 'a', 'the', 'is', 'in', 'A', 'are','of','when','that','for','on', '|','as','to','The','an','and','News','-','with','at','it', 'has']
 
@@ -54,13 +120,22 @@ lines = kvs.map(lambda x: x[1])
 
 cols = lines.map(lambda line: line.split("| "))
 
-titles = cols.map(lambda x: x[0])
-titles.pprint(num=10)
+titles = cols.map(lambda x: x[0]) \
+             .map(lambda line: extractNER(line, nlp))
+titles.pprint(num=20)
+
+descs = cols.map(lambda x: x[1]) \
+             .map(lambda line: extractNER(line, nlp))
+descs.pprint(num=20)
+
 
 context.start()
 context.awaitTermination()
 
 '''
+#def collocateWords(text):
+#    tokens = word_tokenize(text)
+#    return Text(tokens).collocations()
 counts = lines.flatMap(lambda line: line.split(" ")) \
               .filter(lambda a: filterUselessWords(a,wordBlacklist)) \
               .map(lambda word: (word,1)) \
@@ -83,7 +158,6 @@ from time import time
 from datetime import timedelta
 import datetime
 from atexit import register
-from pycorenlp import StanfordCoreNLP
 import argparse
 from collections import Counter
 
@@ -96,9 +170,6 @@ from collections import Counter
 parser = argparse.ArgumentParser(description="Read news articles from kafka topics and extract entities from text.")
 parser.add_argument("kafka_broker", help="URL of the kafka broker in the form URL:PORT")
 parser.add_argument("kafka_topic", help="kafka topic name to listen to")
-parser.add_argument("-s", "--server", 
-                    help="URL of the Stanford CoreNLP server (default: http://localhost:9000)",
-                    action="store", required=True, default="http://localhost:9000")
 parser.add_argument("-b", "--from-beginning", help="read from the beginning of the topic",
                             action="store_true", default=False)
 parser.add_argument("-c", "--count", help="count the topN (given by -n) entities",
@@ -129,18 +200,6 @@ def Ending(kafka_consumer):
         print("###############################")
         print('Dates:',Counter(dates).most_common(topN))
 
-## define the sorting fucntion for NEs
-def appendToList(text, ner):
-    if ner == "PERSON" and ' ' in text:
-        people.append(text)
-    elif ner == "LOCATION":
-        places.append(text)
-    elif ner == "ORGANIZATION": 
-        orgs.append(text)
-    elif ner == "MISC":
-        misc.append(text)
-    elif ner == "DATE":
-        dates.append(text)
 
 # start end timer
 start = time()
@@ -175,8 +234,6 @@ consumer = KafkaConsumer(args.kafka_topic,
 # register the exit code
 register(Ending,consumer)
 
-# open the port to the NLP server
-nlp = StanfordCoreNLP(args.server)
 print("Listening....")
 # read messages
 while True:
