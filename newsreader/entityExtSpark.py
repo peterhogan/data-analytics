@@ -118,7 +118,7 @@ kvs = KafkaUtils.createDirectStream(context, [args.topic], {"metadata.broker.lis
 
 lines = kvs.map(lambda x: x[1])
 
-cols = lines.map(lambda line: line.split("| "))
+cols = lines.map(lambda line: line.split("|"))
 
 titles = cols.map(lambda x: x[0]) \
              .map(lambda line: extractNER(line, nlp))
