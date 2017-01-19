@@ -100,6 +100,10 @@ def extractNER(sentence, nlpServer):
                         pass
     return [people,locations,organisations,misc,dates]
 
+## write a CSV file function:
+def lineToCSV(line):
+    return '|'.join(str(i) for i in line)
+
 ## Connect to NLP Server
 nlp = StanfordCoreNLP(args.server)
 
@@ -116,18 +120,18 @@ context = StreamingContext.getOrCreate(args.checkpoint, functionToCreateContext)
 
 kvs = KafkaUtils.createDirectStream(context, [args.topic], {"metadata.broker.list": args.broker})
 
-lines = kvs.map(lambda x: x[1])
+lines = kvs.map(lambda x: x[1])\
+           .map(lambda line: line.split("|"))\
+           .map(lambda x: x[0]) \
+           .map(lambda line: extractNER(line, nlp))\
+           .union\
+           .map(lambda x: x[1]) \
+           .map(lambda line: extractNER(line, nlp))\
+           .union
 
-cols = lines.map(lambda line: line.split("|"))
+lines.pprint()
 
-titles = cols.map(lambda x: x[0]) \
-             .map(lambda line: extractNER(line, nlp))
-titles.pprint(num=20)
-
-descs = cols.map(lambda x: x[1]) \
-             .map(lambda line: extractNER(line, nlp))
-descs.pprint(num=20)
-
+#lines.saveAsTextFiles("/newsreader/csvs/test3.csv")
 
 context.start()
 context.awaitTermination()
