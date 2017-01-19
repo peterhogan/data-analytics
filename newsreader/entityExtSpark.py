@@ -29,7 +29,7 @@ def updateFunction(newValues, runningCount):
 def functionToCreateContext():
     scc = StreamingContext(sc, 2)
     sc.setLogLevel("ERROR")
-    scc.checkpoint(args.checkpoint)
+    #scc.checkpoint(args.checkpoint)
     return scc
 
 def filterUselessWords(word, blacklist):
@@ -121,13 +121,10 @@ context = StreamingContext.getOrCreate(args.checkpoint, functionToCreateContext)
 kvs = KafkaUtils.createDirectStream(context, [args.topic], {"metadata.broker.list": args.broker})
 
 lines = kvs.map(lambda x: x[1])\
-           .map(lambda line: line.split("|"))\
-           .map(lambda x: x[0]) \
+           .union(kvs.map(lambda x: x[1])\
+           .map(lambda line: line.split("|")[0])\
            .map(lambda line: extractNER(line, nlp))\
-           .union\
-           .map(lambda x: x[1]) \
-           .map(lambda line: extractNER(line, nlp))\
-           .union
+           )
 
 lines.pprint()
 
@@ -137,6 +134,15 @@ context.start()
 context.awaitTermination()
 
 '''
+lines = kvs.map(lambda x: x[1])\
+           .map(lambda line: line.split("|"))\
+           .map(lambda x: x[0]) \
+           .map(lambda line: extractNER(line, nlp))\
+           .union\
+           .map(lambda x: x[1]) \
+           .map(lambda line: extractNER(line, nlp))\
+           .union
+
 #def collocateWords(text):
 #    tokens = word_tokenize(text)
 #    return Text(tokens).collocations()
