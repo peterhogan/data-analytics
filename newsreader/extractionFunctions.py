@@ -63,7 +63,7 @@ def extractNER(sentence, nlpServer):
 ## Entity Extraction function
 def encodeNER(text, entities, delim=" || "):
     #initalise node dictionary
-    node = {}
+    article  = {}
 
     # separate the variables
     split_text = text.split(delim)
@@ -73,25 +73,19 @@ def encodeNER(text, entities, delim=" || "):
 
     # map values to fields
     for i,f in zip(range(len(fields)),fields):
-        node[f]=split_text[i]
+        article[f]=split_text[i]
 
     # construct entity dictionaries
     ents = []
-    print(entities)
     for ent in sorted(list(set([i[0] for i in entities if entities]))):
-        print(ent)
         itr = 1
-        print(itr)
         values = []
-        for val in [j for (i,j) in entities if i == ent]:
-            print(val)
+        for val in sorted([j for (i,j) in entities if i == ent]):
             values.append((ent+str(itr),val)) 
             itr += 1
-            print(values)
-        print(ents)
         ents.append((ent+'S',dict(values)))
 
-    print(dict(entities))
+    node = article.copy()
+    node.update(dict(ents))
 
-
-    return
+    return node

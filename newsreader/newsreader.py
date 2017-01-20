@@ -206,7 +206,10 @@ try:
 
                     if args.output == "all":
                         rss_article_tuple = (itemtitle,itemdesc,itempubdate,itemguid,itemroottitle,itemrootdate)
-                        rss_article = ' || '.join(rss_article_tuple)
+                        try:
+                            rss_article = ' || '.join(rss_article_tuple)
+                        except TypeError:
+                            pass
                     elif args.output == "title":
                         rss_article = itemtitle
                     elif args.output == "description":
