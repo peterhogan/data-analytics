@@ -5,6 +5,7 @@ from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import *
 import argparse
 from pycorenlp import StanfordCoreNLP
+import extractionFunctions
 #from nltk import word_tokenize, Text, collocations
 
 ######### CLI arguments #########
@@ -54,10 +55,15 @@ def appendToList(text, ner):
 def extractNER(sentence, nlpServer):
     # initialise lists for entities:
     people = []
+    people_ent = {}
     locations = []
+    locations_ent = {}
     organisations = []
+    organisations_ent = {}
     dates = []
+    dates_ent = {}
     misc = []
+    misc_ent = {}
 
     # decode to UTF-8
     sentence_decode = sentence#.value.decode('utf-8')
@@ -98,7 +104,31 @@ def extractNER(sentence, nlpServer):
                         chamber.append((token_text,token_ner))
                     else:   
                         pass
-    return [people,locations,organisations,misc,dates]
+
+    if people:
+        for index,person in zip(range(len(people)),people):
+            people_ent['person '+str(index)] = person
+    if locations:
+        for index,place in zip(range(len(locations)),locations):
+            locations_ent['location '+str(index)] = place
+    if organisations:
+        for index,org in zip(range(len(organisations)),organisations):
+            organisations_ent['organisation '+str(index)] = org
+    if dates:
+        for index,date in zip(range(len(dates)),dates):
+            dates_ent['date '+str(index)] = date
+    if misc:
+        for index,miscs in zip(range(len(misc)),misc):
+            misc_ent['misc  '+str(index)] = miscs
+
+    all_ents = {}
+    all_ents['People'] = people_ent
+    all_ents['Locations'] = locations_ent
+    all_ents['Organisations'] = organisations_ent
+    all_ents['Dates'] = dates_ent
+    all_ents['Misc'] = misc_ent
+
+    return all_ents
 
 ## write a CSV file function:
 def lineToCSV(line):
@@ -121,10 +151,13 @@ context = StreamingContext.getOrCreate(args.checkpoint, functionToCreateContext)
 kvs = KafkaUtils.createDirectStream(context, [args.topic], {"metadata.broker.list": args.broker})
 
 lines = kvs.map(lambda x: x[1])\
+           .union(kvs.map(lambda x: x[1]).map(lambda line: line.split("|")[0])\
            .union(kvs.map(lambda x: x[1])\
-           .map(lambda line: line.split("|")[0])\
-           .map(lambda line: extractNER(line, nlp))\
+           .map(lambda line: line.split("|")[1]))\
+           .flatMap(lambda line: extractionFunctions.extractNER(line, nlp))\
            )
+           
+           
 
 lines.pprint()
 
