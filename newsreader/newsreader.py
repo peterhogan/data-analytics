@@ -259,4 +259,4 @@ if args.quiet == False or args.running == False:
     print('Articles sent:\t\t', articlessent)
     print('Duplicate articles:\t', duplicates)
     print('Time taken:\t\t',str(timedelta(seconds=totaltime)))
-    print('Size of globalGUID.log:\t', size_format(int(os.stat(globalGUID).st_size)))
+    print('Size of GUID file:\t', globalGUID,"-", size_format(int(os.stat(globalGUID).st_size)))
