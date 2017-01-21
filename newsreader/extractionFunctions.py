@@ -2,25 +2,8 @@ from pycorenlp import StanfordCoreNLP
 
 ######### define functions ########
 
-## write a CSV file function:
-def lineToCSV(line):
-    return '|'.join(str(i) for i in line)
-
 # List Topics to pull out
 tokenlist = ["PERSON","LOCATION","MISC","ORGANIZATION","DATE"]
-
-## define the sorting fucntion for NEs
-def appendToList(text, ner):
-    if ner == "PERSON" and ' ' in text:
-        people.append(text)
-    elif ner == "LOCATION":
-        locations.append(text)
-    elif ner == "ORGANIZATION": 
-        organisations.append(text)
-    elif ner == "MISC":
-        misc.append(text)
-    elif ner == "DATE":
-        dates.append(text)
 
 ## Entity Extraction function
 def extractNER(sentence, nlpServer):
@@ -96,3 +79,17 @@ def encodeNER(text, entities, delim=" || "):
     node.update(dict(ents))
 
     return node
+
+## Extract nodes from entity enriched json file
+def namedNodes(inputfile):
+    return
+
+
+
+
+
+
+
+
+
+
