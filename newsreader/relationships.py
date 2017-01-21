@@ -38,6 +38,7 @@ log.info("Opening: %s", args.inputfile)
 with open(args.inputfile, 'r') as f:
     nodedata = json.load(f)
 
+<<<<<<< HEAD
 for item in nodedata:
     for entity in match_list:
         try:
@@ -50,6 +51,19 @@ for item in nodedata:
 
 totalmatches = []
     
+=======
+print(nodedata[0:9])
+
+for item in nodedata:
+    try:
+        for people in item["PERSONS"]:
+            print(item["PERSONS"][people])
+        #print(item["PERSONS"]["PERSON1"])
+    except KeyError:
+        pass
+
+'''
+>>>>>>> 92fd395dfb72748a7d23f9d15ed9fbe40ddcd80b
 for left in nodedata:
     leftmatches = 0
     for right in nodedata:
