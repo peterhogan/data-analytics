@@ -48,7 +48,14 @@ def extractNER(sentence, nlpServer):
             else:   
                 if len(chamber) > 0:
                     appendPair = (chamber[0][1],' '.join([chamber[a][0] for a in range(len(chamber))])) 
-                    entities.append(appendPair)
+
+                    # Catch people with 1 name to narrow down false positives
+                    if chamber[0][1] != "PERSON":
+                        entities.append(appendPair)
+                    elif len(chamber) < 2:
+                        pass
+                    else:
+                        entities.append(appendPair)
 
                     ## reinitalise the chamber
                     chamber = []

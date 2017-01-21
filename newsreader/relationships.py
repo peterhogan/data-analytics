@@ -28,10 +28,15 @@ log.info("Opening: %s", args.inputfile)
 with open(args.inputfile, 'r') as f:
     nodedata = json.load(f)
 
+print(nodedata[0:9])
 
-print(nodedata[0])
-print("#"*100)
-print(nodedata[1])
+for item in nodedata:
+    try:
+        for people in item["PERSONS"]:
+            print(item["PERSONS"][people])
+        #print(item["PERSONS"]["PERSON1"])
+    except KeyError:
+        pass
 
 '''
 for left in nodedata:
