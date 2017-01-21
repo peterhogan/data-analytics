@@ -12,6 +12,7 @@ from time import sleep
 from datetime import timedelta
 import sys
 import argparse
+import logging
 
 ############################################
 ############### Inital setup ############### 
@@ -23,7 +24,7 @@ logo = """                                                  _
    / / |/ /  _/. \/\/ /_\ \  / `,_/ ,_/./ _ `|/ _` |/ ,_// _/  
   /_/`\__/\____/\_/\_//___| /_/\_\\____/\__,_/\___,|\___/_/    
 """
-version = "  Version 0.2"
+version = "  Version 0.3"
 
 # Function to read nice byte sizes:
 def size_format(x, suffix='B'):
@@ -42,6 +43,8 @@ def size_format(x, suffix='B'):
 parser = argparse.ArgumentParser(description="Read news articles from RSS feeds given by the --file option, and send them to kafka_broker kafka_topic.")
 parser.add_argument("kafka_broker", help="URL of the kafka broker in the form URL:PORT")
 parser.add_argument("kafka_topic", help="kafka topic name to send to")
+parser.add_argument("-v", "--verbose" help="log level DEBUG",
+                    action="store_true", default=False)
 parser.add_argument("-q", "--quiet", help="only output on error",
                     action="store_true", default=False)
 parser.add_argument("-l", "--live", help="print the article name on send",
@@ -62,11 +65,22 @@ parser.add_argument("-c", "--continuous", help="keep iterating over the RSS file
 parser.add_argument("-n", "--number-of-messages", help="give the number of messages to send, 0 = all", action="store", type=int, default=0)
 args = parser.parse_args()
 
+# Logging
+if args.quiet:
+    logging.basicConfig(level=logging.ERROR)
+elif args.verbose:
+    logging.basicConfig(level=logging.DEBUG)
+else:
+    logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(name='newsreaderLog')
+
 # specify the location of the feed file (text file full of rss links)
 rssfeedfile = args.file
+log.debug('location of rss file: %s',rssfeedfile)
 
 # specify the location of the global GUID file
 globalGUID = args.guid
+log.debug('location of guid file: %s',globalGUID)
 
 # Print logo
 if args.quiet == False:
@@ -82,6 +96,7 @@ if args.interactive:
 
 # start timer
 start = time()
+log.debug("Starting timer")
 
 ###################################################
 ######### Define the ancilliary functions ######### 
@@ -130,11 +145,12 @@ articlessent = 0
 duplicates = 0
 
 # start the kafka producer
+log.debug("starting Kafka communication: %s", args.kafka_broker)
 try:
     producer = KafkaProducer(bootstrap_servers=args.kafka_broker)
 except kafka.errors.NoBrokersAvailable:
-    print("##### No brokers found running! #####")
-    print("Ensure Zookeeper and Kakfa are running and retry")
+    log.error("No brokers found running")
+    log.info("Ensure Zookeeper and Kakfa are running and retry")
     quit()
 
 # Open the rssfeeds text file for parsing
@@ -170,25 +186,29 @@ try:
 
                 for i in range(len(rssfile.xpath('//channel/item'))):
 
-                    # Get GUID and pass iteration if it already exists
+                    # Get the item title
+                    try:
+                        itemtitle = rssfile.xpath('//channel/item/title')[i].text
+                    except IndexError:
+                        itemtitle = 'NO ITEM TITLE FOUND'
+
+                    log.debug("Item title: %s",itemtitle)
+
+                    # Get GUID 
                     try:
                         itemguid = rssfile.xpath('//channel/item/guid')[i].text
                     except IndexError:
                         itemguid = rssfile.xpath('//channel/item/title')[i].text
 
-                    if itemguid in guid_list:
+                    # pass iteration if it already exists in log file
+                    if itemtitle or itemguid in guid_list:
                         # increment the duplicates counter then skip
                         duplicates += 1
                         continue
                     else:
                         with open(globalGUID, 'a+') as masterGUIDw:
                             masterGUIDw.write(str(itemguid)+'\n')
-
-                    # Get the item title
-                    try:
-                        itemtitle = rssfile.xpath('//channel/item/title')[i].text
-                    except IndexError:
-                        itemtitle = 'NO ITEM TITLE FOUND'
+                            masterGUIDw.write(str(itemtitle)+'\n')
 
                     # Get the item Description and remove any html tags
                     try:
