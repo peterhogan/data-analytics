@@ -75,6 +75,8 @@ if args.output:
             message = msg.value.decode('utf-8')
             message_content = ' '.join(message.split(" || ")[0:2])
             jsonList.append(EF.encodeNER(message,EF.extractNER(message_content,nlp)))
+            if not args.quiet:
+                print("Files read:",filesread, end='\r')
     except KeyboardInterrupt:
         pass
 else:
