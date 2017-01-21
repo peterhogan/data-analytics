@@ -43,7 +43,7 @@ def size_format(x, suffix='B'):
 parser = argparse.ArgumentParser(description="Read news articles from RSS feeds given by the --file option, and send them to kafka_broker kafka_topic.")
 parser.add_argument("kafka_broker", help="URL of the kafka broker in the form URL:PORT")
 parser.add_argument("kafka_topic", help="kafka topic name to send to")
-parser.add_argument("-v", "--verbose" help="log level DEBUG",
+parser.add_argument("-v", "--verbose", help="log level DEBUG",
                     action="store_true", default=False)
 parser.add_argument("-q", "--quiet", help="only output on error",
                     action="store_true", default=False)
@@ -180,16 +180,18 @@ try:
 
                 # get root title with RootTitle function
                 itemroottitle = RootTitles(rssfile)
+                log.debug("%s", itemroottitle)
 
                 # get build date with BuildDates function (if possible)
                 itemrootdate = BuildDates(rssfile)
+                log.debug("%s", itemrootdate)
 
                 for i in range(len(rssfile.xpath('//channel/item'))):
 
                     # Get the item title
                     try:
-                        itemtitle = rssfile.xpath('//channel/item/title')[i].text
-                    except IndexError:
+                        itemtitle = rssfile.xpath('//channel/item/title')[i].text.encode('utf-8')
+                    except (TypeError,IndexError,AttributeError):
                         itemtitle = 'NO ITEM TITLE FOUND'
 
                     log.debug("Item title: %s",itemtitle)
@@ -201,14 +203,27 @@ try:
                         itemguid = rssfile.xpath('//channel/item/title')[i].text
 
                     # pass iteration if it already exists in log file
-                    if itemtitle or itemguid in guid_list:
+                    if itemtitle in guid_list or itemguid in guid_list:
+                        if itemtitle in guid_list:
+                            log.debug("%s in guid log file", itemtitle)
+                        if itemguid in guid_list:
+                            log.debug("%s in guid log file", itemguid)
                         # increment the duplicates counter then skip
                         duplicates += 1
+                        log.debug("Number of duplicates: %i", duplicates)
                         continue
                     else:
+                        log.debug("Unique article: %s", itemtitle)
                         with open(globalGUID, 'a+') as masterGUIDw:
-                            masterGUIDw.write(str(itemguid)+'\n')
-                            masterGUIDw.write(str(itemtitle)+'\n')
+                            log.debug("Global guid file opened")
+                            masterGUIDw.write(str(itemguid)+'\n'+str(itemtitle)+'\n')
+                            log.debug("Global guid file writen to")
+                        log.debug("Global guid file closed")
+                    # decode the item title
+                    try:
+                        itemtitle = itemtitle.decode('utf-8')
+                    except AttributeError:
+                        continue
 
                     # Get the item Description and remove any html tags
                     try:
@@ -225,10 +240,14 @@ try:
                         itempubdate = ' ' 
 
                     if args.output == "all":
+                        log.debug("Outputting all fields")
                         rss_article_tuple = (itemtitle,itemdesc,itempubdate,itemguid,itemroottitle,itemrootdate)
+                        log.debug("Article tuple created: %r", rss_article_tuple)
                         try:
                             rss_article = ' || '.join(rss_article_tuple)
+                            log.debug("Article: %r", rss_article)
                         except TypeError:
+                            log.error("Type error creating article")
                             pass
                     elif args.output == "title":
                         rss_article = itemtitle
@@ -244,10 +263,11 @@ try:
                         rss_article= itemrootdate
 
 
-                    producer.send(args.kafka_topic, rss_article.encode('utf-8'))
-
-
-                    articlessent += 1
+                    try:
+                        producer.send(args.kafka_topic, rss_article.encode('utf-8'))
+                        articlessent += 1
+                    except NameError:
+                        continue
                     
                     if args.number_of_messages > 0:
                         if args.number_of_messages <= articlessent:
