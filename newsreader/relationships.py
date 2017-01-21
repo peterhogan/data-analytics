@@ -38,51 +38,39 @@ log.info("Opening: %s", args.inputfile)
 with open(args.inputfile, 'r') as f:
     nodedata = json.load(f)
 
-log.info("Cleaning duplicate titles")
-dups = 0
-for item in nodedata:
-    for check in nodedata:
-        if item['guid'] != check['guid']:
-            if item['title'] == check['title']:
-                dups += 1
-                #print(item['title'][0:10],"######",check['title'][0:10])
+def matchNodes(nodedata, matchlist):
+    totalmatches = []
+    titlelist= []
+    duplicates = 0
+
+    for left in nodedata:
+        leftmatches = 0
+        titlelist.append(left['title'])
+        for right in nodedata:
+            if left["guid"] != right["guid"]:
+                if right['title'] not in titlelist:
+                    for entity in matchlist:
+                        try:
+                            for x in left[entity]:  
+                                for y in right[entity]:
+                                    if left[entity][x] == right[entity][y]:
+                                        leftmatches += 1
+                                    else:
+                                        pass
+                        except KeyError:
+                            pass
+                else:
+                    duplicates += 1
+                    pass
             else:
                 pass
-print("Duplicates:",dups)
+        if leftmatches > 0:
+            totalmatches.append((leftmatches,left['title']))
+    return totalmatches
+'''
 
-totalmatches = []
-titlelist= []
-duplicates = 0
-
-for left in nodedata:
-    leftmatches = 0
-    titlelist.append(left['title'])
-    for right in nodedata:
-        if left["guid"] != right["guid"]:
-            if right['title'] not in titlelist:
-                for entity in match_list:
-                    try:
-                        for x in left[entity]:  
-                            for y in right[entity]:
-                                if left[entity][x] == right[entity][y]:
-                                    if left['title'] == right['title']:
-                                        pass
-                                    leftmatches += 1
-                                    #print(entity,"match!:",left[entity][x],"=",right[entity][y])
-                                    #print(left['title'],right['title'])
-                                else:
-                                    pass
-                    except KeyError:
-                        pass
-            else:
-                duplicates += 1
-                #print("DUPLICATE:",right['title'])
-        else:
-            pass
-    if leftmatches > 0:
-        totalmatches.append((leftmatches,left['title']))
 finish = time() - timestart
-for top in sorted(totalmatches,reverse=True)[0:40]:
+for top in sorted(totalmatches,reverse=True)[0:10]:
     print(top)
 
 matches = sum([i for i in map(lambda x: x[0],totalmatches)])
@@ -92,3 +80,4 @@ print("highest degree", max(totalmatches))
 print("total matches",matches)
 print("time taken", finish)
 print(len(nodedata),"articles")
+'''
