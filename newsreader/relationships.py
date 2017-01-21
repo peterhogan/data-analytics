@@ -1,6 +1,10 @@
+from time import sleep
+from time import time
 import argparse
 import json
 import logging
+
+timestart = time()
 
 ##### COMMAND LINE ARGUMENTS #####
 parser = argparse.ArgumentParser(description="Determine relationships between data in JSON format")
@@ -24,17 +28,55 @@ else:
 log = logging.getLogger('relaLog')
 
 
+##### INITIALISATION #####
+
+# list of entites to match
+match_list = ["PERSONS","LOCATIONS","ORGANIZATIONS","DATES","MISCS"]
+
+
 log.info("Opening: %s", args.inputfile)
 with open(args.inputfile, 'r') as f:
     nodedata = json.load(f)
 
+for item in nodedata:
+    for entity in match_list:
+        try:
+            for entry in item[entity]:
+                pass
+                #print(item[entity][entry])
+        except KeyError:
+            pass
+    #print('#'*30)
 
-print(nodedata[0])
-print("#"*100)
-print(nodedata[1])
-
-'''
+totalmatches = []
+    
 for left in nodedata:
+    leftmatches = 0
     for right in nodedata:
-        for locs in left[
-'''
+        if right["guid"] != left["guid"] and right['title'] != left['title']:
+            for entity in match_list:
+                try:
+                    for x in left[entity]:  
+                        for y in right[entity]:
+                            if left[entity][x] == right[entity][y]:
+                                leftmatches += 1
+                                #print(entity,"match!:",left[entity][x],"=",right[entity][y])
+                                #print(left['title'],right['title'])
+                            else:
+                                pass
+                except KeyError:
+                    pass
+        else:
+            pass
+    if leftmatches > 0:
+        totalmatches.append((leftmatches,left['title']))
+finish = time() - timestart
+for top in sorted(totalmatches,reverse=True)[0:20]:
+    print(top)
+
+matches = sum([i for i in map(lambda x: x[0],totalmatches)])
+
+print("highest degree", max(totalmatches))
+print("total matches",matches)
+print("time taken", finish)
+print(len(nodedata),"articles")
