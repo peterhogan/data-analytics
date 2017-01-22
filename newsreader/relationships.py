@@ -28,15 +28,25 @@ else:
 log = logging.getLogger('relaLog')
 
 
-##### INITIALISATION #####
+##### Functions #####
 
 # list of entites to match
 match_list = ["PERSONS","LOCATIONS","ORGANIZATIONS","DATES","MISCS"]
 
-
 log.info("Opening: %s", args.inputfile)
 with open(args.inputfile, 'r') as f:
     nodedata = json.load(f)
+
+# List all unique entities
+def listUniqueEntities(nodedata,matchlist):
+    for match in matchlist:
+        for item in nodedata:
+            for entity in item[match]:
+                print(entity)
+    return
+
+print("Unique entities:")
+listUniqueEntities(nodedata, match_list)
 
 def matchNodes(nodedata, matchlist):
     totalmatches = []
@@ -67,17 +77,19 @@ def matchNodes(nodedata, matchlist):
         if leftmatches > 0:
             totalmatches.append((leftmatches,left['title']))
     return totalmatches
-'''
+
+tmatch = matchNodes(nodedata, match_list)
+data1 = sorted(tmatch,reverse=True)[0:10]
+for item in data1:
+    print(item)
+
 
 finish = time() - timestart
-for top in sorted(totalmatches,reverse=True)[0:10]:
-    print(top)
 
-matches = sum([i for i in map(lambda x: x[0],totalmatches)])
+matches = sum([i for i in map(lambda x: x[0],tmatch)])
 
-print('Duplicates:',duplicates)
-print("highest degree", max(totalmatches))
+#print('Duplicates:',duplicates)
+print("highest degree", max(tmatch))
 print("total matches",matches)
 print("time taken", finish)
 print(len(nodedata),"articles")
-'''
