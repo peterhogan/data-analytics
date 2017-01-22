@@ -75,7 +75,12 @@ print(lengths)
 for x,y in zip(match_list,lengths):
     print(x,y)
 
-def matchNodes(nodedata, entityList):
+# Function to check if article contain entities
+def checkMatches(article, entities):
+    return
+    
+
+def matchNodes(nodedata, matchlist):
     totalmatches = []
     titlelist= []
     duplicates = 0
@@ -105,6 +110,34 @@ def matchNodes(nodedata, entityList):
             totalmatches.append((leftmatches,left['title']))
     return totalmatches
 
+# define read function
+def readEntities(article, matchlist):
+    entityList = []
+    for entity in match_list:
+        try:
+            entityList.append(article[entity])
+        except KeyError:
+            pass
+    return entityList
+
+
+
+for article in nodedata:
+    print(readEntities(article, match_list))
+
+for i in data1:
+    for j in i:
+        print(j[0])
+
+quit()
+
+'''
+for article in articlelist:
+    for entity in allEntities:
+        if entity in article
+'''
+
+
 tmatch = matchNodes(nodedata, match_list)
 data1 = sorted(tmatch,reverse=True)[0:10]
 for item in data1:
@@ -120,4 +153,3 @@ print("highest degree", max(tmatch))
 print("total matches",matches)
 print("time taken", finish)
 print(len(nodedata),"articles")
-'''
