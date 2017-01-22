@@ -38,17 +38,44 @@ with open(args.inputfile, 'r') as f:
     nodedata = json.load(f)
 
 # List all unique entities
-def listUniqueEntities(nodedata,matchlist):
+def listUniqueEntities(data,matchlist):
+    # list of sublists of unique entities
+    uniqueEntities = []
+
+    # iterate over all entities to match (fn input)
     for match in matchlist:
-        for item in nodedata:
-            for entity in item[match]:
-                print(entity)
-    return
+        log.debug("Now scanning for: %s",match)
 
-print("Unique entities:")
-listUniqueEntities(nodedata, match_list)
+        # form the container list for this entity type
+        matchlistname = str(match)+"entities"
+        log.debug("The match list name is: %r", matchlistname)
+        matchlistname = []
 
-def matchNodes(nodedata, matchlist):
+        # iterate over each entry in the input data
+        for entry in data:
+            try:
+                for matchtype in entry[match]:
+                    log.debug("Now matching against: %s",matchtype)
+                    matchedPair = (entry[match][matchtype],match[0:-1]) 
+                    log.debug("Matched pair: %r",matchedPair)
+                    if matchedPair not in matchlistname:
+                        matchlistname.append(matchedPair)
+                        log.debug("Current matches: %r", len(matchlistname))
+            except KeyError:
+                pass
+        uniqueEntities.append(sorted(matchlistname))
+        log.debug("Finished with matchtype %s",match)
+
+    return uniqueEntities
+
+#print(listUniqueEntities(nodedata,match_list)[0])
+data1 = listUniqueEntities(nodedata,match_list)
+lengths = [len(data1[i]) for i in range(len(data1))]
+print(lengths)
+for x,y in zip(match_list,lengths):
+    print(x,y)
+
+def matchNodes(nodedata, entityList):
     totalmatches = []
     titlelist= []
     duplicates = 0
@@ -93,3 +120,4 @@ print("highest degree", max(tmatch))
 print("total matches",matches)
 print("time taken", finish)
 print(len(nodedata),"articles")
+'''
