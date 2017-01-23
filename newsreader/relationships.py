@@ -84,7 +84,10 @@ def makeEdges(data,matchlist):
     entity_nodes = listUniqueEntities(data,matchlist)
 
     # produce flat list
-    entity_nodes_name = [i[0] for i in entity_nodes]
+    entity_nodes_name = []
+    for entry in entity_nodes:
+        for i in entry:
+            entity_nodes_name.append(i[0])
 
     # init edge list
     edges = []
@@ -100,11 +103,9 @@ def makeEdges(data,matchlist):
 
                 # if it matches append it to the edges list as a pair
                 if value in entity_nodes_name:
-                    edges.append((article['title'],value))
-                else:
-                    print(value,"not found in",article['title'],"which has entities:",entity)
+                    edges.append((('source',article['title']),('target',value)))
 
-    return edges
+    return dict(edges)
     
 
 # list of entites to match
@@ -124,7 +125,7 @@ for i in listUniqueEntities(nodedata,match_list):
     for j in i:
         uniqueEntityList.append(j[0])
 
-print(uniqueEntityList)
+#print(uniqueEntityList)
 mentions = []
 for article in nodedata:
     for entity in readEntities(article, match_list):
@@ -133,9 +134,10 @@ for article in nodedata:
                 mentions.append(value)
 
 #print(mentions)
-print(Counter(mentions).most_common(10))
+#print(Counter(mentions).most_common(10))
 
-#print(makeEdges(nodedata,match_list))
+print(makeEdges(nodedata,match_list))
+print(len(makeEdges(nodedata,match_list)))
 
 quit()
 

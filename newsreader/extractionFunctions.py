@@ -83,13 +83,3 @@ def encodeNER(text, entities, delim=" || "):
 ## Extract nodes from entity enriched json file
 def namedNodes(inputfile):
     return
-
-
-
-
-
-
-
-
-
-
