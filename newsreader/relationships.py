@@ -3,6 +3,7 @@ from time import time
 import argparse
 import json
 import logging
+from collections import Counter
 
 timestart = time()
 
@@ -71,9 +72,9 @@ def listUniqueEntities(data,matchlist):
 #print(listUniqueEntities(nodedata,match_list)[0])
 data1 = listUniqueEntities(nodedata,match_list)
 lengths = [len(data1[i]) for i in range(len(data1))]
-print(lengths)
-for x,y in zip(match_list,lengths):
-    print(x,y)
+#print(lengths)
+#for x,y in zip(match_list,lengths):
+    #print(x,y)
 
 # Function to check if article contain entities
 def checkMatches(article, entities):
@@ -122,14 +123,29 @@ def readEntities(article, matchlist):
 
 
 
-for article in nodedata:
-    print(readEntities(article, match_list))
-
+uniqueEntityList = []
 for i in data1:
+    #print(i)
     for j in i:
-        print(j[0])
+        uniqueEntityList.append(j[0])
+
+#print(uniqueEntityList)
+mentions = []
+for article in nodedata:
+    for entity in readEntities(article, match_list):
+        for key,value in entity.items():
+            if value in uniqueEntityList:
+                mentions.append(value)
+
+#print(mentions)
+print(Counter(mentions).most_common(10))
 
 quit()
+
+##### TO DO #####
+# 1) match entities in the articles
+# 2) print JSON nodes for the unique entities
+# 3) print JSON edges for relationship
 
 '''
 for article in articlelist:
