@@ -31,13 +31,6 @@ log = logging.getLogger('relaLog')
 
 ##### Functions #####
 
-# list of entites to match
-match_list = ["PERSONS","LOCATIONS","ORGANIZATIONS","DATES","MISCS"]
-
-log.info("Opening: %s", args.inputfile)
-with open(args.inputfile, 'r') as f:
-    nodedata = json.load(f)
-
 # List all unique entities
 def listUniqueEntities(data,matchlist):
     # list of sublists of unique entities
@@ -69,17 +62,87 @@ def listUniqueEntities(data,matchlist):
 
     return uniqueEntities
 
+# define function to make unique entities into JSON format (and output?)
+def entityNodes(data):
+    return
+
+# define read function
+def readEntities(article, matchlist):
+    entityList = []
+    for entity in match_list:
+        try:
+            entityList.append(article[entity])
+        except KeyError:
+            pass
+    return entityList
+
+
+# define edge creation function
+def makeEdges(data,matchlist):
+
+    # extract the nodes:
+    entity_nodes = listUniqueEntities(data,matchlist)
+
+    # produce flat list
+    entity_nodes_name = [i[0] for i in entity_nodes]
+
+    # init edge list
+    edges = []
+
+    # iterate over all articles in the data
+    for article in data:
+
+        # extract entities per article
+        for entity in readEntities(article, matchlist):
+
+            # look at value for matching
+            for key,value in entity.items():
+
+                # if it matches append it to the edges list as a pair
+                if value in entity_nodes_name:
+                    edges.append((article['title'],value))
+                else:
+                    print(value,"not found in",article['title'],"which has entities:",entity)
+
+    return edges
+    
+
+# list of entites to match
+match_list = ["PERSONS","LOCATIONS","ORGANIZATIONS","DATES","MISCS"]
+
+log.info("Opening: %s", args.inputfile)
+with open(args.inputfile, 'r') as f:
+    nodedata = json.load(f)
+
 #print(listUniqueEntities(nodedata,match_list)[0])
 data1 = listUniqueEntities(nodedata,match_list)
 lengths = [len(data1[i]) for i in range(len(data1))]
-#print(lengths)
-#for x,y in zip(match_list,lengths):
-    #print(x,y)
 
-# Function to check if article contain entities
-def checkMatches(article, entities):
-    return
-    
+uniqueEntityList = []
+for i in listUniqueEntities(nodedata,match_list):
+    #print(i)
+    for j in i:
+        uniqueEntityList.append(j[0])
+
+print(uniqueEntityList)
+mentions = []
+for article in nodedata:
+    for entity in readEntities(article, match_list):
+        for key,value in entity.items():
+            if value in uniqueEntityList:
+                mentions.append(value)
+
+#print(mentions)
+print(Counter(mentions).most_common(10))
+
+#print(makeEdges(nodedata,match_list))
+
+quit()
+
+##### TO DO #####
+# 1) match entities in the articles
+# 2) print JSON nodes for the unique entities
+# 3) print JSON edges for relationship
 
 def matchNodes(nodedata, matchlist):
     totalmatches = []
@@ -110,48 +173,6 @@ def matchNodes(nodedata, matchlist):
         if leftmatches > 0:
             totalmatches.append((leftmatches,left['title']))
     return totalmatches
-
-# define read function
-def readEntities(article, matchlist):
-    entityList = []
-    for entity in match_list:
-        try:
-            entityList.append(article[entity])
-        except KeyError:
-            pass
-    return entityList
-
-
-
-uniqueEntityList = []
-for i in data1:
-    #print(i)
-    for j in i:
-        uniqueEntityList.append(j[0])
-
-#print(uniqueEntityList)
-mentions = []
-for article in nodedata:
-    for entity in readEntities(article, match_list):
-        for key,value in entity.items():
-            if value in uniqueEntityList:
-                mentions.append(value)
-
-#print(mentions)
-print(Counter(mentions).most_common(10))
-
-quit()
-
-##### TO DO #####
-# 1) match entities in the articles
-# 2) print JSON nodes for the unique entities
-# 3) print JSON edges for relationship
-
-'''
-for article in articlelist:
-    for entity in allEntities:
-        if entity in article
-'''
 
 
 tmatch = matchNodes(nodedata, match_list)
