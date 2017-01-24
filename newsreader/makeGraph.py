@@ -157,8 +157,7 @@ def makeEntityNodes(data,matchlist):
 
     for entitytype in listUniqueEntities(data,matchlist):
         for etype in entitytype:
-            for entity in etype:
-                entity_list.append({"id": entity, "group": identifier})
+            entity_list.append({"id": etype[0], "group": identifier})
         identifier += 1
 
     return entity_list
@@ -166,4 +165,6 @@ def makeEntityNodes(data,matchlist):
 def knitGraph(data,matchlist):
     return {"nodes": makeArticleNodes(data,matchlist)+makeEntityNodes(data,matchlist), "links": makeLinks(data,matchlist)}
 
+#makeEntityNodes(nodedata, match_list)
+#print(makeEntityNodes(nodedata, match_list))
 print(json.dumps(knitGraph(nodedata,match_list), sort_keys=True))
