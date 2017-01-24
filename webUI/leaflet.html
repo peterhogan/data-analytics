@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<style>
+#mapid { height: 480px; }
+</style>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+<div id="mapid"></div>
+<script>
+
+var mymap = L.map('mapid').setView([51.505, -0.09], 10);
+
+L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 18,
+    id: 'peterhogan.2o06lcg4',
+    accessToken: 'pk.eyJ1IjoicGV0ZXJob2dhbiIsImEiOiJjaXlibmc5OXcwMDUxMzJwMTFmNjR0YTVqIn0.wgGLXdLvInTPohqpwLIcWw'
+}).addTo(mymap);
+
+var marker = L.marker([51.5, -0.09]).addTo(mymap);
+
+marker.bindPopup("<b>London</b>");
+
+var popup = L.popup();
+
+function onMapClick(e){
+    popup
+        .setLatLng(e.latlng)
+        .setContent(e.latlng.toString())
+        .openOn(mymap)
+}
+
+mymap.on('click', onMapClick);
+
+</script>
+<html>
+</html>

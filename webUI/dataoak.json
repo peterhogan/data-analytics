@@ -1,0 +1,12 @@
+{
+  "graph": [],
+  "links": [
+    {"source": "Alice", "target": "Bob"},
+    {"source": "Alice", "target": "Charlie"}],
+  "nodes": [
+    {"id": "Alice"},
+    {"id": "Bob"},
+    {"id": "Charlie"}],
+  "directed": false,
+  "multigraph": false
+}

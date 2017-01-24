@@ -1,0 +1,15 @@
+{
+  "graph": [],
+  "links": [
+    {"source": "Alice", "target": "Bob"},
+    {"source": "Bob", "target": "Evie"},
+    {"source": "Alice", "target": "Evie"},
+    {"source": "Alice", "target": "Dean"}],
+  "nodes": [
+    {"size": 20, "score": 0, "id": "Alice", "type": "circle"},
+    {"size": 10, "score": 0.2, "id": "Bob", "type": "circle"},
+    {"size": 10, "score": 0.3, "id": "Evie", "type": "circle"},
+    {"size": 30, "score": 0.4, "id": "Charlie", "type": "circle"}],
+  "directed": false,
+  "multigraph": false
+}
