@@ -15,7 +15,7 @@
 
 </style>
 
-<svg width="1800" height="900"></svg>
+<svg width="4800" height="4900"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
@@ -32,11 +32,6 @@ var simulation = d3.forceSimulation()
 
 d3.json("news.json", function(error, graph) {
     if (error) throw error;
-
-/*
-d3.json("miserables.json", function(error, graph) {
-    if (error) throw error;
-*/
 
     var link = svg.append("g")
         .attr("class", "links")
