@@ -1,0 +1,9 @@
+[Unit]
+Description=Start HDP2.5 Docker instance
+
+[Service]
+Type=oneshot
+ExecStart=/home/k5user/hdp-docker-startup.sh
+
+[Install]
+WantedBy=multi-user.target
