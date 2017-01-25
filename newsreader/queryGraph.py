@@ -30,115 +30,32 @@ log = logging.getLogger('relaLog')
 
 ##### Functions #####
 
-# List all unique entities
-def listUniqueEntities(data,matchlist):
-    # list of sublists of unique entities
-    uniqueEntities = []
-
-    # iterate over all entities to match (fn input)
-    for match in matchlist:
-        log.debug("Now scanning for: %s",match)
-
-        # form the container list for this entity type
-        matchlistname = str(match)+"entities"
-        log.debug("The match list name is: %r", matchlistname)
-        matchlistname = []
-
-        # iterate over each entry in the input data
-        for entry in data:
-            try:
-                for matchtype in entry[match]:
-                    log.debug("Now matching against: %s",matchtype)
-                    matchedPair = (entry[match][matchtype],match[0:-1]) 
-                    log.debug("Matched pair: %r",matchedPair)
-                    if matchedPair not in matchlistname:
-                        matchlistname.append(matchedPair)
-                        log.debug("Current matches: %r", len(matchlistname))
-            except KeyError:
-                pass
-        uniqueEntities.append(sorted(matchlistname))
-        log.debug("Finished with matchtype %s",match)
-
-    return uniqueEntities
-
-# define read function
-def readEntities(article, matchlist):
-    entityList = []
-    for entity in match_list:
-        try:
-            entityList.append(article[entity])
-        except KeyError:
-            pass
-    return entityList
-
-# define edge creation function
-def makeEdges(data,matchlist):
-
-    # extract the nodes:
-    entity_nodes = listUniqueEntities(data,matchlist)
-
-    # produce flat list
-    entity_nodes_name = []
-    for entry in entity_nodes:
-        for i in entry:
-            entity_nodes_name.append(i[0])
-
-    # init edge list
-    edges = []
-
-    # iterate over all articles in the data
-    for article in data:
-
-        # extract entities per article
-        for entity in readEntities(article, matchlist):
-
-            # look at value for matching
-            for key,value in entity.items():
-
-                # if it matches append it to the edges list as a pair
-                if value in entity_nodes_name:
-                    edges.append((('source',article['title']),('target',value)))
-
-    return dict(edges)
-
-def makeArticleNodes(data, matchlist):
-    # init article list
-    article_list = []    
-
-    # iterate over articles
-    for article in data:
-        article_list.append({"id" : article['title'],
-                             "group" : 1})
-
-    return article_list
-
-def makeLinks(data,matchlist):
-    link_list = []
-    for article in data:
-        for entity in readEntities(article, matchlist):
-            for key,value in entity.items():
-                link_list.append({"source": article['title'],
-                                  "target": value})
-    return link_list
-
-def makeEntityNodes(data,matchlist):
-    identifier = 2
-    entity_list = []
-
-    for entitytype in listUniqueEntities(data,matchlist):
-        for etype in entitytype:
-            entity_list.append({"id": etype[0], "group": identifier})
-        identifier += 1
-
-    return entity_list
-
-def knitGraph(data,matchlist):
-    return {"nodes": makeArticleNodes(data,matchlist)+makeEntityNodes(data,matchlist), "links": makeLinks(data,matchlist)}
-
 log.info("Opening: %s", args.inputfile)
 with open(args.inputfile, 'r') as f:
     graphinput = json.load(f)
 
+def nodeLinks(graphdata, query):
+    node_links = []
+    for link in graphdata['links']:
+        if link['target'] == query:
+            node_links.append(((link['target'],link['source'])))
+    return node_links
+
+all_targets = []
+for link in graphinput['links']:
+    if link['target'] not in all_targets:
+        all_targets.append(link['target'])
+
+node_degrees = []
+for i in sorted(all_targets):
+    node_degrees.append((len(nodeLinks(graphinput,i)),i))
+
+high_node_degrees = []
+for i in sorted(all_targets):
+    if len(nodeLinks(graphinput,i)) > 2:
+        high_node_degrees.append((len(nodeLinks(graphinput,i)),i))
+
+print(sorted(high_node_degrees, reverse=True))
 
 
-
+quit("Finish")
