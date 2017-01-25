@@ -7,20 +7,23 @@
   tasks:
   - name: Install Wget
     yum: name=wget state=latest
-  - name: Register HDP2.5 image path
-    stat:
-      path: /home/k5user/HDP_2.5_docker.tar.gz
-    register: docker_image
-  - name: ensure HDP2.5 image is present
-    command: wget http://hortonassets.s3.amazonaws.com/2.5/HDP_2.5_docker.tar.gz -O /home/k5user/HDP_2.5_docker.tar.gz
-    when: docker_image.stat.exists == False
+
   - name: Register tarball name for HDP2.5
     stat:
       path: /home/k5user/HDP_2.5_docker.tar
     register: docker_tar
+
+  - name: ensure HDP2.5 image is present
+    get_url:
+      url: http://hortonassets.s3.amazonaws.com/2.5/HDP_2.5_docker.tar.gz
+      checksum: md5:c613fab7ed21e15886ab23d7a28aec8a
+      dest: /home/k5user/HDP_2.5_docker.tar.gz
+    when: docker_tar.stat.exists == False
+   
   - name: gunzip the HDP2.5 tarball (if non extant)
     command: gunzip /home/k5user/HDP_2.5_docker.tar.gz
     when: docker_tar.stat.exists == False
+
   - name: ensure docker repo is present
     template: src=/home/k5user/git/data-analytics/ansible/data-sandpit/configs/docker-repo.j2 dest=/etc/yum.repos.d/docker.repo
   - name: ensure docker-engine is installed
