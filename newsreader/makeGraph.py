@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser(description="Determine relationships between da
 parser.add_argument("inputfile", help="input file to read nodes from")
 parser.add_argument("-q", "--quiet", help="only output on error",action="store_true")
 parser.add_argument("-v", "--verbose", help="log level DEBUG",action="store_true")
+parser.add_argument("-e","--edges", help="output the edges only", action="store_true")
 parser.add_argument("-s", "--server", help="server address for geo queries",
         action="store", required=False, default="http://localhost:9090")
 parser.add_argument("-o", "--output", help="output the relationships to a JSON file",
@@ -163,8 +164,8 @@ def makeEntityNodes(data,matchlist):
     return entity_list
 
 def knitGraph(data,matchlist):
+    if args.edges == True:
+        return {"links": makeLinks(data,matchlist)}
     return {"nodes": makeArticleNodes(data,matchlist)+makeEntityNodes(data,matchlist), "links": makeLinks(data,matchlist)}
 
-#makeEntityNodes(nodedata, match_list)
-#print(makeEntityNodes(nodedata, match_list))
 print(json.dumps(knitGraph(nodedata,match_list), sort_keys=True))
