@@ -5,8 +5,15 @@
   become_method: sudo
 
   tasks:
+  - name: Install Wget
+    yum: name=wget state=latest
+  - name: Register HDP2.5 image path
+    stat:
+      path: /home/k5user/HDP_2.5_docker.tar.gz
+    register: docker_image
   - name: ensure HDP2.5 image is present
-    copy: src=/home/k5user/HDP_2.5_docker.tar.gz dest=/home/k5user/HDP_2.5_docker.tar.gz force=no
+    command: wget http://hortonassets.s3.amazonaws.com/2.5/HDP_2.5_docker.tar.gz -O /home/k5user/HDP_2.5_docker.tar.gz
+    when: docker_image.stat.exists == False
   - name: Register tarball name for HDP2.5
     stat:
       path: /home/k5user/HDP_2.5_docker.tar
