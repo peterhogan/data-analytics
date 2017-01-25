@@ -22,7 +22,7 @@
     command: gunzip /home/k5user/HDP_2.5_docker.tar.gz
     when: docker_tar.stat.exists == False
   - name: ensure docker repo is present
-    template: src=/home/k5user/data-sandpit/configs/docker-repo.j2 dest=/etc/yum.repos.d/docker.repo
+    template: src=/home/k5user/git/data-analytics/ansible/data-sandpit/configs/docker-repo.j2 dest=/etc/yum.repos.d/docker.repo
   - name: ensure docker-engine is installed
     yum: name=docker-engine state=latest
   - name: ensure docker is running
@@ -34,7 +34,7 @@
       recurse: yes
       mode: 0755
   - name: edit docker conf file
-    template: src=/home/k5user/data-sandpit/configs/docker.conf.j2 dest=/etc/systemd/system/docker.service.d/docker.conf
+    template: src=/home/k5user/git/data-analytics/ansible/data-sandpit/configs/docker.conf.j2 dest=/etc/systemd/system/docker.service.d/docker.conf
   - name: daemon reload
     command: /usr/bin/systemctl daemon-reload
   - name: restart docker
@@ -42,14 +42,14 @@
   - name: load docker HDP2.5 image into Docker
     command: docker load < /home/k5user/HDP_2.5_docker.tar
   - name: check bash script exists for startup
-    template: src=/home/k5user/data-sandpit/configs/hdp-docker-startup.sh.j2 dest=/home/k5user/hdp-docker-startup.sh
+    template: src=/home/k5user/git/data-analytics/ansible/data-sandpit/configs/hdp-docker-startup.sh.j2 dest=/home/k5user/hdp-docker-startup.sh
   - name: make the script executable
     file:
       path: /home/k5user/hdp-docker-startup.sh
       state: touch
       mode: "u+x"
   - name: push service file for sandpit
-    template: src=/home/k5user/data-sandpit/configs/hdp2.5.service.j2 dest=/etc/systemd/system/hdp2.5.service
+    template: src=/home/k5user/git/data-analytics/ansible/data-sandpit/configs/hdp2.5.service.j2 dest=/etc/systemd/system/hdp2.5.service
   - name: enable the systemd service to run hdp2.5 docker image on boot
     command: systemctl enable hdp2.5.service
   - name: start the sandbox service
