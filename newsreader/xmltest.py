@@ -17,6 +17,7 @@ import argparse
 import logging
 import xml.etree.ElementTree as ET
 import extractionFunctions as EF
+import json
 
 ############################################
 ############### Inital setup ############### 
@@ -72,37 +73,27 @@ ns = {'janes': 'http://dtd.janes.com/2002/Content/',
       'dc': 'http://purl.org/dc/elements/1.1/',
       'jm': 'http://dtd.janes.com/2005/metadata/'}
 
-# initialise JSON list
-json_list = []
+with open(arg.output, "+w") as outputfile:
+        # pull out the news sources one by one
+    for filename in glob(os.path.join(arg.file, "*.xml")):
 
-outputfile = open(arg.output, "+w")
-    # pull out the news sources one by one
-for filename in glob(os.path.join(arg.file, "*.xml")):
+        # open the file
+        with open(filename, "r", encoding="ISO-8859-1") as xmlfile:
+            try:
+                tree = ET.parse(filename)
+                root = tree.getroot()
+            except etree.XMLSyntaxError:
+                logging.error("failed at xml parse")
+                continue
 
-    # open the file
-    with open(filename, "r", encoding="ISO-8859-1") as xmlfile:
-        try:
-            tree = ET.parse(filename)
-            root = tree.getroot()
-        except etree.XMLSyntaxError:
-            logging.error("failed at xml parse")
-            continue
+            title = root.findall('janes:title',ns)[0].text
 
-        title = root.findall('janes:title',ns)[0].text
+            paras = []
+            for section in root.findall('janes:sect1', ns):
+                for paragraph in section.findall('janes:para', ns):
+                    paras.append(paragraph.text)
+            
+            message = title+" || "+paras[0]
+            message_content = title+" "+paras[0]
 
-        paras = []
-        for section in root.findall('janes:sect1', ns):
-            for paragraph in section.findall('janes:para', ns):
-                paras.append(paragraph.text)
-        
-        message = title+" || "+paras[0]
-        message_content = title+" "+paras[0]
-
-        print(message)
-
-        json_list.append(EF.encodeNER(message,EF.extractNER(message_content,nlp)))
-
-
-print(json_list)
-
-
+            outputfile.write(json.dumps(EF.encodeNER(message,EF.extractNER(message_content,nlp)), sort_keys=True))
