@@ -67,6 +67,9 @@ nlp = StanfordCoreNLP(arg.server)
 start = time()
 log.debug("Starting timer")
 
+# JSON List
+json_list = []
+
 # Janes namespace Dict
 ns = {'janes': 'http://dtd.janes.com/2002/Content/',
       'xlink': 'http://www.w3.org/1999/xlink',
@@ -96,4 +99,6 @@ with open(arg.output, "+w") as outputfile:
             message = title+" || "+paras[0]
             message_content = title+" "+paras[0]
 
-            outputfile.write(json.dumps(EF.encodeNER(message,EF.extractNER(message_content,nlp)), sort_keys=True))
+            json_list.append(EF.encodeNER(message,EF.extractNER(message_content,nlp)))
+
+    json.dump(json_list, outputfile, sort_keys=True, ensure_ascii=True)
