@@ -58,12 +58,21 @@ def encodeNER(text, entities, delim=" || "):
     # separate the variables
     split_text = text.split(delim)
 
-    # ordered list of fields to map to node
-    fields = ['title','description','published','guid','reportedby']
+    try:
+        # ordered list of fields to map to node
+        fields = ['title','description','published','guid','reportedby']
 
-    # map values to fields
-    for i,f in zip(range(len(fields)),fields):
-        article[f]=split_text[i]
+        # map values to fields
+        for i,f in zip(range(len(fields)),fields):
+            article[f]=split_text[i]
+    except IndexError:
+        # ordered list of fields to map to node
+        fields = ['title','description']
+
+        # map values to fields
+        for i,f in zip(range(len(fields)),fields):
+            article[f]=split_text[i]
+
 
     # construct entity dictionaries
     ents = []

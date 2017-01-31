@@ -24,7 +24,7 @@ logo = """                                                  _
    / / |/ /  _/. \/\/ /_\ \  / `,_/ ,_/./ _ `|/ _` |/ ,_// _/  
   /_/`\__/\____/\_/\_//___| /_/\_\\____/\__,_/\___,|\___/_/    
 """
-version = "  Version 0.4"
+version = "  Version 0.3"
 
 # Function to read nice byte sizes:
 def size_format(x, suffix='B'):
@@ -56,7 +56,7 @@ parser.add_argument("-i", "--interactive", help="wait for keypress to start send
 parser.add_argument("-w", "--wait", help="how many seconds to pause before iterating over the source list (only when running in continuous mode)", action="store", type=int, default=60)
 parser.add_argument("-f", "--file", help="path of RSS sources file",
                     action="store", required=True)
-parser.add_argument("-D", "--database", help="path of the DB used to store the article data",
+parser.add_argument("-g", "--guid", help="name of the global GUID file, default: globalGUID.log",
                     action="store", required=False, default="globalGUID.log")
 parser.add_argument("-O", "--output", help="list the outputs to send",
                     choices=["all","title","description","date","GUID","roottitle","rootdate"], default="all")

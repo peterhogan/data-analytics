@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../../../config/support/janes-deliver.xsl"?>
+<!DOCTYPE janes:record SYSTEM "../../../../config/janesml-delivery-norm-2.1.dtd">
+<janes:record xmlns:janes="http://dtd.janes.com/2002/Content/" id="jticm2487" pubabbrev="JTIC" sysId="jticm2487">
+   <janes:metadata xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="">
+      <dc:rights xmlns:dc="http://purl.org/dc/elements/1.1/">Copyright © IHS (Global) Limited, 2011</dc:rights>
+      <dc:date xmlns:dc="http://purl.org/dc/elements/1.1/" qualifier="pubDate">20110520</dc:date>
+      <dc:date xmlns:dc="http://purl.org/dc/elements/1.1/" qualifier="postDate">20110520</dc:date>
+      <dc:subject xmlns:dc="http://purl.org/dc/elements/1.1/" qualifier="publication">Jane's Terrorism and Insurgency Centre</dc:subject>
+      <dc:subject xmlns:dc="http://purl.org/dc/elements/1.1/" qualifier="volIssue"/>
+      <dc:subject xmlns:dc="http://purl.org/dc/elements/1.1/" qualifier="edition">2011</dc:subject>
+      <dc:subject xmlns:dc="http://purl.org/dc/elements/1.1/" qualifier="updateStatus"/>
+      <dc:subject xmlns:dc="http://purl.org/dc/elements/1.1/" qualifier="div1Title">EVENTS</dc:subject>
+      <dc:subject xmlns:dc="http://purl.org/dc/elements/1.1/" qualifier="div2Title"/>
+      <dc:subject xmlns:dc="http://purl.org/dc/elements/1.1/" qualifier="div3Title"/>
+      <dc:source xmlns:dc="http://purl.org/dc/elements/1.1/" qualifier="originProduct">JTIC</dc:source>
+      <dc:subject xmlns:dc="http://purl.org/dc/elements/1.1/" qualifier="fullTitle">Incendiary attack targets Israeli military vehicle in West Bank</dc:subject>
+      <dc:subject xmlns:dc="http://purl.org/dc/elements/1.1/" qualifier="Sequence"/>
+      <dc:subject xmlns:dc="http://purl.org/dc/elements/1.1/" qualifier="RecordSummary">AN ISRAELI military vehicle was damaged in an incendiary attack by unidentified Palestinian militants near the West Bank city of Nablus late on 19 May,...</dc:subject>
+      <jm:country xmlns:jm="http://dtd.janes.com/2005/metadata/">
+         <jm:id/>
+         <jm:code/>
+         <jm:standardName/>
+      </jm:country>
+      <jm:country xmlns:jm="http://dtd.janes.com/2005/metadata/">
+         <jm:id/>
+         <jm:code/>
+         <jm:standardName/>
+      </jm:country>
+      <jm:event xmlns:jm="http://dtd.janes.com/2005/metadata/">
+         <jm:subject qualifier="DateOfEvent">19-May-2011</jm:subject>
+         <jm:subject qualifier="TerroristGroupType"/>
+         <jm:subject qualifier="TerroristGroupName"/>
+         <jm:subject qualifier="TerroristGroupRegionOfOrigin"/>
+         <jm:subject qualifier="LocationOfAttackRegion">Eastern Mediterranean</jm:subject>
+         <jm:subject qualifier="LocationOfAttackCountry">Gaza and the West Bank</jm:subject>
+         <jm:subject qualifier="TerroristEventType">Damaging attack</jm:subject>
+         <jm:subject qualifier="TerroristTactic">Ambush</jm:subject>
+         <jm:subject qualifier="TerroristTactic">Fire Attack Small</jm:subject>
+         <jm:subject qualifier="TerroristTarget">Transport</jm:subject>
+         <jm:subject qualifier="NumberOfPerpetratorFatalities">0</jm:subject>
+         <jm:subject qualifier="NumberOfPerpetratorWounded">0</jm:subject>
+         <jm:subject qualifier="NumberOfKidnappedPersonnel">0</jm:subject>
+         <jm:subject qualifier="Source">Maan News Agency</jm:subject>
+         <jm:subject qualifier="NumberOfNonPerpetratorWounded">0</jm:subject>
+         <jm:subject qualifier="NumberOfNonPerpetratorFatalities">0</jm:subject>
+         <jm:subject qualifier="NumberOfWoundedTotal">0</jm:subject>
+         <jm:subject qualifier="NumberOfFatalitiesTotal">0</jm:subject>
+         <jm:subject qualifier="TotalNumberOfAttacks">1</jm:subject>
+         <jm:subject qualifier="LocationRegion">Eastern Mediterranean</jm:subject>
+         <jm:subject qualifier="LocationCountry">Gaza and the West Bank</jm:subject>
+         <jm:subject qualifier="LocationDistrict">Nablus</jm:subject>
+         <jm:subject qualifier="LocationPlaceName">Nablus</jm:subject>
+         <jm:subject qualifier="LocationLocationQuality">Town</jm:subject>
+         <jm:subject qualifier="LocationGeocodeLat">32.2211111</jm:subject>
+         <jm:subject qualifier="LocationGeocodeLong">35.2544444</jm:subject>
+         <jm:subject qualifier="LatLong">32.2211111,35.2544444</jm:subject>
+         <jm:subject qualifier="InsideAssistance"/>
+         <jm:subject qualifier="CounterTerroristTactic"/>
+         <jm:subject qualifier="ScaleOfAttack">Micro</jm:subject>
+         <jm:subject qualifier="AttackCountMicro">1</jm:subject>
+         <jm:subject qualifier="AttackCountMacro"/>
+         <jm:subject qualifier="AttackCountExtreme"/>
+         <jm:subject qualifier="NumberOfAttacks">1</jm:subject>
+         <jm:subject qualifier="ExplosiveDeviceSize">0</jm:subject>
+         <jm:subject qualifier="SuicideAttack">No</jm:subject>
+         <jm:subject qualifier="DamageScale">Damage to a vehicle</jm:subject>
+         <jm:subject qualifier="TargetDescription"/>
+         <jm:subject qualifier="TerroristTargetSubType">Vehicle</jm:subject>
+         <jm:subject qualifier="TargetOwnershipCountry">Israel</jm:subject>
+         <jm:subject qualifier="TargetSector">Infrastructure and Transport</jm:subject>
+         <jm:subject qualifier="TargetSector">Military</jm:subject>
+         <jm:subject qualifier="EventNotes"/>
+         <jm:subject qualifier="CreatedDateTime">20110520 00:00:00</jm:subject>
+         <jm:subject qualifier="UpdatedDateTime">20110520 16:15:22</jm:subject>
+         <jm:subject qualifier="PostedDateTime">20110520 16:24:13</jm:subject>
+         <jm:subject qualifier="PreviouslyPublishedVersions">0</jm:subject>
+         <jm:subject qualifier="EventID">123267</jm:subject>
+      </jm:event>
+
+      
+      <jm:place xmlns:jm="http://dtd.janes.com/2005/metadata/" modified="">
+        <jm:id>252</jm:id>
+        
+        <jm:standardName>Eastern Mediterranean</jm:standardName>
+        <jm:latLong confidence="005" datum="" latLongSource=""></jm:latLong>
+        <jm:geoCoordinate confidence="005" datum="" latLongSource="">
+          <jm:lat></jm:lat>
+          <jm:long></jm:long>
+        </jm:geoCoordinate>
+        <jm:country>
+          <jm:id></jm:id>
+          <jm:code></jm:code>
+          <jm:standardName></jm:standardName>
+        </jm:country>
+      </jm:place>
+      
+
+      
+      <jm:place xmlns:jm="http://dtd.janes.com/2005/metadata/" modified="N">
+        <jm:id>102</jm:id>
+        
+        <jm:standardName nameSource="V">Israel</jm:standardName>
+        <jm:alias nameSource="N">Dawlat Isra&#x27;il</jm:alias>
+        <jm:alias nameSource="N">Medinat Yisra&#x27;el</jm:alias>
+        <jm:alias nameSource="V">Eretz Yisrael</jm:alias>
+        <jm:alias nameSource="V">Erez Yisra&#x27;el</jm:alias>
+        <jm:alias nameSource="C">State of Israel</jm:alias>
+        <jm:classification>
+          <jm:standardName>PCLI:Place_Isa_Independent-Political-Entity</jm:standardName>
+        </jm:classification>
+        <jm:latLong confidence="005" datum="WGS84" latLongSource="NGA">31.5,34.75</jm:latLong>
+        <jm:geoCoordinate confidence="005" datum="WGS84" latLongSource="NGA">
+          <jm:lat>31.5</jm:lat>
+          <jm:long>34.75</jm:long>
+        </jm:geoCoordinate>
+        <jm:province>
+          <jm:standardName>Israel (general)</jm:standardName>
+        </jm:province>
+        <jm:country>
+          <jm:id>102</jm:id>
+          <jm:code>IS</jm:code>
+          <jm:standardName>Israel</jm:standardName>
+          <jm:region standard="JANES">
+            <jm:standardName>Eastern Mediterranean</jm:standardName>
+          </jm:region>
+          <jm:region standard="UNSD">
+            <jm:standardName>Western Asia</jm:standardName>
+          </jm:region>
+        </jm:country>
+      </jm:place>
+      
+
+      
+      <jm:place xmlns:jm="http://dtd.janes.com/2005/metadata/" modified="J">
+        <jm:id>237</jm:id>
+        
+        <jm:standardName nameSource="C">Gaza and the West Bank</jm:standardName>
+        <jm:classification>
+          <jm:standardName>PCL:Place_Isa_Political-Entity</jm:standardName>
+        </jm:classification>
+        <jm:latLong confidence="005" datum="WGS84" latLongSource="JANE'S">31.4166667,34.3333333</jm:latLong>
+        <jm:geoCoordinate confidence="005" datum="WGS84" latLongSource="JANE'S">
+          <jm:lat>31.4166667</jm:lat>
+          <jm:long>34.3333333</jm:long>
+        </jm:geoCoordinate>
+        <jm:province>
+          <jm:standardName>Gaza Strip (general)</jm:standardName>
+        </jm:province>
+        <jm:country>
+          <jm:id>237</jm:id>
+          <jm:code>GZ</jm:code>
+          <jm:standardName>Gaza and the West Bank</jm:standardName>
+          <jm:region standard="JANES">
+            <jm:standardName>Eastern Mediterranean</jm:standardName>
+          </jm:region>
+          <jm:region standard="UNSD">
+            <jm:standardName>Western Asia</jm:standardName>
+          </jm:region>
+        </jm:country>
+      </jm:place>
+      
+
+      
+      <jm:place xmlns:jm="http://dtd.janes.com/2005/metadata/" modified="N">
+        <jm:id>5646674</jm:id>
+        
+        <jm:standardName nameSource="V">Nablus</jm:standardName>
+        <jm:alias nameSource="V">Sychem</jm:alias>
+        <jm:alias nameSource="V">Sykhem</jm:alias>
+        <jm:alias nameSource="V">Schechem</jm:alias>
+        <jm:alias nameSource="V">Shekhem</jm:alias>
+        <jm:alias nameSource="V">Neapolis</jm:alias>
+        <jm:alias nameSource="V">Shechem</jm:alias>
+        <jm:alias nameSource="N">Nabulus</jm:alias>
+        <jm:alias nameSource="V">Napouse</jm:alias>
+        <jm:classification>
+          <jm:standardName>PPL:Place_Isa_Populated-Place</jm:standardName>
+        </jm:classification>
+        <jm:latLong confidence="005" datum="WGS84" latLongSource="NGA">32.2211111,35.2544444</jm:latLong>
+        <jm:geoCoordinate confidence="005" datum="WGS84" latLongSource="NGA">
+          <jm:lat>32.2211111</jm:lat>
+          <jm:long>35.2544444</jm:long>
+        </jm:geoCoordinate>
+        <jm:country>
+          <jm:id>237</jm:id>
+          <jm:code>GZ</jm:code>
+          <jm:standardName>Gaza and the West Bank</jm:standardName>
+          <jm:region standard="JANES">
+            <jm:standardName>Eastern Mediterranean</jm:standardName>
+          </jm:region>
+          <jm:region standard="UNSD">
+            <jm:standardName>Western Asia</jm:standardName>
+          </jm:region>
+        </jm:country>
+      </jm:place>
+      
+
+      <jm:classification xmlns:jm="http://dtd.janes.com/2005/metadata/"><jm:standardName>Events</jm:standardName></jm:classification>
+<jm:secondary xmlns:jm="http://dtd.janes.com/2005/metadata/">
+         <jm:country>
+            <jm:standardName>Gaza and the West Bank</jm:standardName>
+         </jm:country>
+         <jm:country>
+            <jm:standardName>Israel</jm:standardName>
+         </jm:country>
+</jm:secondary>
+   </janes:metadata>
+   <janes:title>Incendiary attack targets Israeli military vehicle in West Bank</janes:title>
+   <janes:sect1>
+      <janes:para>AN ISRAELI military vehicle was damaged in an incendiary attack by unidentified Palestinian militants near the West Bank city of Nablus late on 19 May, Maan News Agency reported. No casualties were reported in the attack.</janes:para>
+   </janes:sect1>
+</janes:record>
