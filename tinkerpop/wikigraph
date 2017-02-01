@@ -1,0 +1,15 @@
+graph = TinkerGraph.open()
+graph.createIndex('userId', Vertex.class)
+
+g = graph.traversal()
+
+getOrCreate = { id =>
+    g.V().has('userId', id).tryNext().orElseGet{ g.addV('userId', id).next() }
+}
+
+new File('wiki-Vote.txt').eachLine {
+    if (!it.startsWith("#")){
+        (fromVertex, toVertex) = it.split('\t').collect(getOrCreate)
+        fromVertex.addEdge('votesFor', toVertex)
+    }
+}

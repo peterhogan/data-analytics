@@ -9,7 +9,7 @@
 <div id="mapid"></div>
 <script>
 
-var mymap = L.map('mapid').setView([32.79407, -79.86259], 10);
+var mymap = L.map('mapid').setView([54.9, -1.51667], 10);
 
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
             attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
@@ -18,9 +18,9 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
     accessToken: 'pk.eyJ1IjoicGV0ZXJob2dhbiIsImEiOiJjaXlibmc5OXcwMDUxMzJwMTFmNjR0YTVqIn0.wgGLXdLvInTPohqpwLIcWw'
 }).addTo(mymap);
 
-var marker = L.marker([32.79407, -79.86259]).addTo(mymap);
+var marker = L.marker([54.9, -1.51667]).addTo(mymap);
 
-marker.bindPopup("<b>Mount Pleasant</b>");
+marker.bindPopup("<b>Washington</b>");
 
 var popup = L.popup();
 
