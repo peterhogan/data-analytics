@@ -49,6 +49,8 @@ parser.add_argument("-q", "--quiet", help="only output on error",
                     action="store_true", default=False)
 parser.add_argument("-l", "--live", help="print the article name on send",
                     action="store_true", default=False)
+parser.add_argument("-g", "--guid", help="path to the GUID file to use",
+                    action="store", required=False, default="globalGUID.log")
 parser.add_argument("-r", "--running", help="output a running total of files sent",
                     action="store_true", default=False)
 parser.add_argument("-i", "--interactive", help="wait for keypress to start sending articles",
