@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<style>
+#mapid { height: 480px; }
+</style>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+<div id="mapid"></div>
+<script>
+
+var points = [['Women marches across the world draw huge crowds : US', 49.1, 1.96667], ['Lebanese soldiers thwart suicide bombing in Beirut cafe : Beirut', 33.88894, 35.49442], ['Lebanese soldiers thwart suicide bombing in Beirut cafe : Beirut', 33.88659596111022, 35.48486345988575], ['Study linking Roundup to serious disease fuels debate : UK', 55.079, 98.8586], ["Netanyahu plans to discuss 'Iran threat' with Trump : Iran", 14.32749, 120.97798], ["Netanyahu plans to discuss 'Iran threat' with Trump : Tehran", 35.69439, 51.42151], ["Netanyahu plans to discuss 'Iran threat' with Trump : Israel", 16.815, -92.09444], ['Why women marched on Washington : Washington', 47.50012, -120.50147], ['Why women marched on Washington : Washington', 47.4914390931362, -120.49518058125116], ["What is Russia's endgame in Libya? : Libya", 28.0, 17.0], ["What is Russia's endgame in Libya? : Russia", 40.23449, -84.40939], ["Donald Trump denies CIA feud over election 'hacking' : Russia", 40.23449, -84.40939], ["Donald Trump denies CIA feud over election 'hacking' : US", 49.1, 1.96667], ["Women's March on Washington draws massive crowds : Africa", 7.1881, 21.09375], ["Women's March on Washington draws massive crowds : US", 49.1, 1.96667], ["Women's March on Washington draws massive crowds : Europe", 53.41363, 58.94281], ["Women's March on Washington draws massive crowds : Asia", 29.84064, 89.29688], ["Women's March on Washington draws massive crowds : Washington", 47.50012, -120.50147], ["Women's March on Washington draws massive crowds : Washington", 47.4963537745106, -120.49818315951273], ['Gambia crisis ends as Yahya Jammeh leaves for exile  : Gambia', 13.5, -15.5], ["Trump: Targeting Barack Obama's legacy? : US", 49.1, 1.96667], ['Arab journalists urge Egypt to free Al Jazeera reporter : Egypt', 40.6801, -75.52991], ['Thousands protest over far-right conference in Koblenz  : France', 39.71648, 21.61831], ['Thousands protest over far-right conference in Koblenz  : Koblenz', 50.3567, 7.59317], ['Thousands protest over far-right conference in Koblenz  : Italy', 32.18404, -96.88472], ['Thousands protest over far-right conference in Koblenz  : Germany', 14.32722, 120.97739], ["Gabriela Michetti: 'We told the truth'  : Argentina", 17.00156, -92.9078], ["Gabriela Michetti: 'We told the truth'  : Panama", 35.16732, -94.67245], ["Women's March on Washington kicks off Down Under : Australia", 16.10667, -93.34028], ["Women's March on Washington kicks off Down Under : Washington", 47.50012, -120.50147], ["Women's March on Washington kicks off Down Under : New Zealand", -42.0, 174.0], ['Deadly bomb blast hits Rakban refugee camp near Jordan : Jordan', 10.6, 122.61667], ['Deadly bomb blast hits Rakban refugee camp near Jordan : Kazakhstan', 41.80665, 67.98797], ['Deadly bomb blast hits Rakban refugee camp near Jordan : Kazakhstan', 41.80918525298372, 67.97984190672219]]
+
+var mymap = L.map('mapid').setView([51,0], 2);
+
+L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 18,
+    id: 'peterhogan.2o06lcg4',
+    accessToken: 'pk.eyJ1IjoicGV0ZXJob2dhbiIsImEiOiJjaXlibmc5OXcwMDUxMzJwMTFmNjR0YTVqIn0.wgGLXdLvInTPohqpwLIcWw'
+}).addTo(mymap);
+
+for (var i = 0; i < points.length; i++) {
+    marker = new L.marker([points[i][1],points[i][2]])
+        .bindPopup(points[i][0])
+        .addTo(mymap);
+}
+
+var popup = L.popup();
+
+function onMapClick(e){
+    popup
+        .setLatLng(e.latlng)
+        .setContent(e.latlng.toString())
+        .openOn(mymap)
+}
+
+mymap.on('click', onMapClick);
+
+</script>
+<html>
+</html>
+
