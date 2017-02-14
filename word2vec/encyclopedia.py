@@ -39,8 +39,8 @@ temp_clusters = '/tmp/clusters.txt'
 start = time()
 
 w2v.word2phrase(cli.input,temp_phrases, verbose=False)
-w2v.word2vec(temp_phrases, temp_bin, size=300, verbose=False)
-w2v.word2clusters(cli.input, temp_clusters, 300, verbose=False)
+w2v.word2vec(temp_phrases, temp_bin, size=500, verbose=False)
+w2v.word2clusters(cli.input, temp_clusters, 500, verbose=False)
 
 model = w2v.load(temp_bin)
 
@@ -104,4 +104,4 @@ while running == True:
     word_out = model.generate_response(ind, met).tolist()
 
     for i in word_out:
-        print(i)
+        print(i[0], "- relevance:",i[1])
