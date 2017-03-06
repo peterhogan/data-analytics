@@ -173,7 +173,8 @@ try:
                 # download the file by url
                 try:
                     response = urllib.request.urlopen(feed)
-                except RemoteDisconnected:
+                except:
+                    log.error("opening feed %r", feed)
                     continue
                 try:
                     rssfile = etree.parse(response)
