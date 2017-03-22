@@ -16,6 +16,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex
 graph = TitanFactory.open('conf/titan-berkeleyje-es.properties')
 mgmt = graph.openManagement()
 name = mgmt.makePropertyKey("name").dataType(String.class).make()
+mgmt.buildIndex("name", Vertex.class).addKey(name)
 age = mgmt.makePropertyKey("age").dataType(Integer.class).make()
 job = mgmt.makePropertyKey("job").dataType(String.class).make()
 population = mgmt.makePropertyKey("population").dataType(Integer.class).make()
