@@ -61,3 +61,4 @@ fish.addEdge("isRelated", teegan).property("relationship", "mother")
 fish.addEdge("knows", teegan)
 
 tx.commit()
+println "Finished"
