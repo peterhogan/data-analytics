@@ -13,14 +13,19 @@ import org.apache.tinkerpop.gremlin.structure.Direction
 import org.apache.tinkerpop.gremlin.structure.Edge
 import org.apache.tinkerpop.gremlin.structure.T
 import org.apache.tinkerpop.gremlin.structure.Vertex
-graph = TitanFactory.open('conf/titan-berkeleyje-es.properties')
+
+//graph = TitanFactory.open('conf/titan-berkeleyje-es.properties')
+//graph = TitanFactory.open('/analytics/titan/graphtest.properties')
+graph = TitanFactory.open('/analytics/titan-berkeleyje.properties')
+
 mgmt = graph.openManagement()
 name = mgmt.makePropertyKey("name").dataType(String.class).make()
-mgmt.buildIndex("name", Vertex.class).addKey(name)
+//mgmt.buildIndex("name", Vertex.class).addKey(name)
 age = mgmt.makePropertyKey("age").dataType(Integer.class).make()
 job = mgmt.makePropertyKey("job").dataType(String.class).make()
 population = mgmt.makePropertyKey("population").dataType(Integer.class).make()
-relationship = makePropertyKey("relationship").dataType(String.class).make()
+rela = mgmt.makePropertyKey("rela").dataType(String.class).make()
+
 mgmt.makeEdgeLabel("worksIn").multiplicity(Multiplicity.MANY2ONE).make()
 mgmt.makeEdgeLabel("livesIn").multiplicity(Multiplicity.MANY2ONE).make()
 mgmt.makeEdgeLabel("isIn").make()
@@ -30,7 +35,9 @@ mgmt.makeVertexLabel("person").make()
 mgmt.makeVertexLabel("county").make()
 mgmt.makeVertexLabel("country").make()
 mgmt.commit()
+
 TitanTransaction tx = graph.newTransaction()
+
 fish = tx.addVertex(T.label, "person", "name", "fish", "age", 26, "job", "swimmer")
 gin = tx.addVertex(T.label, "person", "name", "gin", "age", 88, "job", "drinker")
 hal = tx.addVertex(T.label, "person", "name", "hal", "age", 9000, "job", "computer")
@@ -56,10 +63,13 @@ hants = tx.addVertex(T.label, "county", "name", "hants", "population", 60000);
 fish.addEdge("worksIn", staffs)
 fish.addEdge("livesIn", uk)
 fish.addEdge("knows", gin)
-fish.addEdge("isRelated", gin).property("relationship", "father")
+fish.addEdge("isRelated", gin).property("rela", "father")
 fish.addEdge("knows", hal)
-fish.addEdge("isRelated", teegan).property("relationship", "mother")
+fish.addEdge("isRelated", teegan).property("rela", "mother")
 fish.addEdge("knows", teegan)
 
 tx.commit()
+
 println "Finished"
+
+
