@@ -14,16 +14,17 @@ mgmt = graph.openManagement()
 // Schema
 // Vertices
 stationId = mgmt.makePropertyKey('stationId').dataType(Integer.class).cardinality(Cardinality.SINGLE).make()
-stationIdIndex = mgmt.buildIndex('stationId', Vertex.class).addKey(stationId)
+stationIdIndex = mgmt.buildIndex('stationId', Vertex.class).addKey(stationId).buildCompositeIndex()
 
 stationName = mgmt.makePropertyKey('stationName').dataType(String.class).make()
-stationNameIndex = mgmt.buildIndex('stationName', Vertex.class).addKey(stationName)
+stationNameIndex = mgmt.buildIndex('stationName', Vertex.class).addKey(stationName).buildCompositeIndex()
 
 zone = mgmt.makePropertyKey('zone').dataType(Float.class).make()
 totalLines = mgmt.makePropertyKey('totalLines').dataType(Integer.class).make()
 line = mgmt.makePropertyKey('line').dataType(String.class).make()
 
 // Edges
+connected = mgmt.makeEdgeLabel('connected').make()
 
 mgmt.commit()
 
@@ -69,6 +70,7 @@ for (item in lines_rows.drop(1)) {
     def Line = item[2]
 
     println "Adding Edge between ${v1.values('stationName')[0]} and ${v2.values('stationName')[0]}, on line ${Line}.\n"
+    v1.addEdge('connected', v2).property('line', Line)
     
 
     /*
@@ -88,11 +90,8 @@ for (item in lines_rows.drop(1)) {
 //println vertexList[0].values('stationId')[0]
 //println vertexList[0].values('stationName')[0]
 
-g = graph.traversal()
-
-
 println "finished edges"
-
+graph.tx().commit()
 println "finished graph"
 
 graph.close()
